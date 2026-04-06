@@ -1,19 +1,5 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://naver-sa-api-benvis.loca.lt/api/:path*"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/:path*",
-      "headers": [
-        { "key": "bypass-tunnel-reminder", "value": "true" }
-      ]
-    }
-  ]
+  "outputDirectory": ".next"
 }
