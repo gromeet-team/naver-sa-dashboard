@@ -2,13 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import {
+  fetchPending,
   fetchAllHistory,
   fetchCreativeHistory,
 } from '@/lib/data';
 import { useBrandFilter } from '@/components/BrandFilter';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import type { HistoryRecord, CreativeHistoryItem } from '@/lib/types';
+import type { Plan, HistoryRecord, CreativeHistoryItem } from '@/lib/types';
 
 const BRAND_MAP: Record<string, string> = {
   kucham: 'kucham', uvid: 'uvid', betterworld: 'uvid', meariset: 'meariset', foremong: 'foremong',
@@ -35,14 +36,26 @@ function fmtDate(iso: string) {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 
+/** 슬랙 붙여넣기용 텍스트 생성 */
+function planToSlackText(plans: Plan[]): string {
+  const lines = plans.map((p) => {
+    const dir = p.action === 'UP' ? '↑' : p.action === 'DOWN' ? '↓' : '-';
+    return `• ${p.brand_name} | ${p.adgroup_name} | ${p.current_bid.toLocaleString()}원 → ${p.new_bid.toLocaleString()}원 ${dir} | ROAS ${p.stats_7d.roas_pct}% | ${p.reason}`;
+  });
+  return `[입찰가 조정 요청]\n${lines.join('\n')}`;
+}
+
 export default function BidAdjustment() {
   const { selectedBrand } = useBrandFilter();
+  const [plans, setPlans] = useState<Plan[]>([]);
   const [history, setHistory] = useState<HistoryRecord[]>([]);
   const [creativeHistory, setCreativeHistory] = useState<CreativeHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   const loadData = useCallback(async () => {
-    const [h, ch] = await Promise.all([fetchAllHistory(), fetchCreativeHistory()]);
+    const [p, h, ch] = await Promise.all([fetchPending(), fetchAllHistory(), fetchCreativeHistory()]);
+    setPlans(p.plans);
     setHistory(h);
     setCreativeHistory(ch);
     setLoading(false);
@@ -52,10 +65,45 @@ export default function BidAdjustment() {
     loadData();
   }, [loadData]);
 
+  const filteredPlans = (
+    selectedBrand === 'all'
+      ? plans
+      : plans.filter((p) => normBrand(p.brand) === selectedBrand)
+  ).filter(
+    (p) => !((p.stats_7d.imp_cnt ?? 0) === 0 && p.stats_7d.sales_amt === 0)
+  );
+
+  const noClickPlans = (
+    selectedBrand === 'all'
+      ? plans
+      : plans.filter((p) => normBrand(p.brand) === selectedBrand)
+  ).filter(
+    (p) => (p.stats_7d.imp_cnt ?? 0) > 0 && p.stats_7d.clk_cnt === 0
+  );
+
   const filteredHistory =
     selectedBrand === 'all'
       ? history
       : history.filter((h) => normBrand(h.brand) === selectedBrand);
+
+  async function handleCopy() {
+    const text = planToSlackText(filteredPlans);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
 
   async function handleRollback(rec: HistoryRecord) {
     try {
@@ -86,18 +134,142 @@ export default function BidAdjustment() {
 
   return (
     <div className="space-y-6">
-      {/* 안내 배너 */}
-      <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg px-4 py-3 text-sm text-blue-300">
-        💬 입찰가 조정은 슬랙으로 데이터를 전달해 주시면 직접 실행합니다.
-      </div>
+
+      {/* 입찰가 조정 후보 */}
+      <Card>
+        <div className="flex items-center justify-between mb-4">
+          <CardTitle>입찰가 조정 후보 ({filteredPlans.length}건)</CardTitle>
+          {filteredPlans.length > 0 && (
+            <button
+              onClick={handleCopy}
+              className={`flex items-center gap-1.5 text-sm px-4 py-1.5 rounded transition-colors font-medium ${
+                copied
+                  ? 'bg-green-700 text-white'
+                  : 'bg-[#2a2d3e] hover:bg-[#363a55] text-gray-200'
+              }`}
+            >
+              {copied ? '✅ 복사됨' : '📋 슬랙 복사'}
+            </button>
+          )}
+        </div>
+        {filteredPlans.length === 0 ? (
+          <p className="text-gray-500 text-sm text-center py-8">
+            조정 후보가 없습니다.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[#2a2d3e] text-gray-400 text-left">
+                  <th className="pb-2 pr-3 font-medium">브랜드</th>
+                  <th className="pb-2 pr-3 font-medium">광고그룹명</th>
+                  <th className="pb-2 pr-3 font-medium text-right">현재입찰가</th>
+                  <th className="pb-2 pr-3 font-medium text-right">제안입찰가</th>
+                  <th className="pb-2 pr-3 font-medium text-right">ROAS%</th>
+                  <th className="pb-2 pr-3 font-medium">방향</th>
+                  <th className="pb-2 font-medium">사유</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#2a2d3e]">
+                {filteredPlans.map((plan, i) => (
+                  <tr key={i} className="hover:bg-[#1e2130] transition-colors">
+                    <td className="py-2 pr-3 text-gray-300">{plan.brand_name}</td>
+                    <td className="py-2 pr-3 text-white max-w-[160px] truncate">
+                      {plan.adgroup_name}
+                    </td>
+                    <td className="py-2 pr-3 text-right text-gray-300">
+                      {plan.current_bid.toLocaleString()}
+                    </td>
+                    <td className="py-2 pr-3 text-right font-semibold text-white">
+                      {plan.new_bid.toLocaleString()}
+                    </td>
+                    <td className="py-2 pr-3 text-right">
+                      <span className={plan.stats_7d.roas_pct < 300 ? 'text-red-400' : 'text-green-400'}>
+                        {plan.stats_7d.roas_pct}%
+                      </span>
+                    </td>
+                    <td className="py-2 pr-3">
+                      <Badge
+                        variant={
+                          plan.action === 'UP' ? 'green' : plan.action === 'DOWN' ? 'red' : 'gray'
+                        }
+                      >
+                        {plan.action}
+                      </Badge>
+                    </td>
+                    <td className="py-2 text-gray-400 text-xs max-w-[200px] truncate">
+                      {plan.reason}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+
+      {/* 노출O / 클릭X */}
+      {noClickPlans.length > 0 && (
+        <Card>
+          <CardTitle>⚠️ 노출O / 클릭X 그룹 (소재교체 검토 필요)</CardTitle>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[#2a2d3e] text-gray-400 text-left">
+                  <th className="pb-2 pr-3 font-medium">브랜드</th>
+                  <th className="pb-2 pr-3 font-medium">광고그룹명</th>
+                  <th className="pb-2 pr-3 font-medium">현재 소재명</th>
+                  <th className="pb-2 pr-3 font-medium text-right">노출수</th>
+                  <th className="pb-2 pr-3 font-medium text-right">클릭수</th>
+                  <th className="pb-2 pr-3 font-medium text-right">광고비</th>
+                  <th className="pb-2 font-medium text-right">ROAS%</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#2a2d3e]">
+                {noClickPlans.map((plan, i) => {
+                  const latestCreative = creativeHistory
+                    .filter(
+                      (c) =>
+                        normBrand(c.brand) === normBrand(plan.brand) &&
+                        c.adgroup === plan.adgroup_name
+                    )
+                    .sort((a, b) => b.changed_at.localeCompare(a.changed_at))[0];
+                  const creativeName = latestCreative?.after ?? '-';
+                  return (
+                    <tr key={i} className="hover:bg-[#1e2130] transition-colors">
+                      <td className="py-2 pr-3 text-gray-300">{plan.brand_name}</td>
+                      <td className="py-2 pr-3 text-white max-w-[140px] truncate">
+                        {plan.adgroup_name}
+                      </td>
+                      <td className="py-2 pr-3 text-gray-400 text-xs max-w-[160px] truncate">
+                        {creativeName}
+                      </td>
+                      <td className="py-2 pr-3 text-right text-gray-300">
+                        {(plan.stats_7d.imp_cnt ?? 0).toLocaleString()}
+                      </td>
+                      <td className="py-2 pr-3 text-right text-red-400">
+                        {plan.stats_7d.clk_cnt}
+                      </td>
+                      <td className="py-2 pr-3 text-right text-gray-300">
+                        {plan.stats_7d.sales_amt.toLocaleString()}원
+                      </td>
+                      <td className="py-2 text-right text-gray-300">
+                        {plan.stats_7d.roas_pct}%
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
 
       {/* 변경 이력 */}
       <Card>
         <CardTitle>변경 이력 ({filteredHistory.length}건)</CardTitle>
         {filteredHistory.length === 0 ? (
-          <p className="text-gray-500 text-sm text-center py-8">
-            변경 이력이 없습니다.
-          </p>
+          <p className="text-gray-500 text-sm text-center py-8">변경 이력이 없습니다.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -109,10 +281,10 @@ export default function BidAdjustment() {
                   <th className="pb-2 pr-3 font-medium text-right">입찰가 변동</th>
                   <th className="pb-2 pr-3 font-medium text-right">ROAS%</th>
                   <th className="pb-2 pr-3 font-medium">사유</th>
-                  <th className="pb-2 pr-3 font-medium text-right">D+1 ROAS</th>
-                  <th className="pb-2 pr-3 font-medium text-right">D+3 ROAS</th>
-                  <th className="pb-2 pr-3 font-medium text-right">D+7 ROAS</th>
-                  <th className="pb-2 pr-3 font-medium">효율판정</th>
+                  <th className="pb-2 pr-3 font-medium text-right">D+1</th>
+                  <th className="pb-2 pr-3 font-medium text-right">D+3</th>
+                  <th className="pb-2 pr-3 font-medium text-right">D+7</th>
+                  <th className="pb-2 pr-3 font-medium">판정</th>
                   <th className="pb-2 font-medium"></th>
                 </tr>
               </thead>
@@ -131,9 +303,7 @@ export default function BidAdjustment() {
                       <td className="py-2 pr-3 text-right whitespace-nowrap text-gray-300">
                         {rec.prev_bid.toLocaleString()}→{rec.new_bid.toLocaleString()}
                       </td>
-                      <td className="py-2 pr-3 text-right text-gray-300">
-                        {rec.roas_pct}%
-                      </td>
+                      <td className="py-2 pr-3 text-right text-gray-300">{rec.roas_pct}%</td>
                       <td className="py-2 pr-3 text-gray-400 text-xs max-w-[160px] truncate">
                         {rec.reason}
                       </td>
@@ -177,16 +347,10 @@ export default function BidAdjustment() {
         </CardTitle>
         {(() => {
           const filtered = creativeHistory
-            .filter(
-              (c) => selectedBrand === 'all' || normBrand(c.brand) === selectedBrand
-            )
+            .filter((c) => selectedBrand === 'all' || normBrand(c.brand) === selectedBrand)
             .sort((a, b) => b.changed_at.localeCompare(a.changed_at));
           if (filtered.length === 0) {
-            return (
-              <p className="text-gray-500 text-sm text-center py-8">
-                소재 변경 이력이 없습니다.
-              </p>
-            );
+            return <p className="text-gray-500 text-sm text-center py-8">소재 변경 이력이 없습니다.</p>;
           }
           return (
             <div className="overflow-x-auto">
@@ -223,19 +387,11 @@ export default function BidAdjustment() {
                     }
                     return (
                       <tr key={i} className="hover:bg-[#1e2130] transition-colors">
-                        <td className="py-2 pr-3 text-gray-400 whitespace-nowrap">
-                          {item.changed_at}
-                        </td>
+                        <td className="py-2 pr-3 text-gray-400 whitespace-nowrap">{item.changed_at}</td>
                         <td className="py-2 pr-3 text-gray-300">{item.brand}</td>
-                        <td className="py-2 pr-3 text-white max-w-[120px] truncate">
-                          {item.adgroup}
-                        </td>
-                        <td className="py-2 pr-3 text-gray-400 text-xs max-w-[140px] truncate">
-                          {item.before}
-                        </td>
-                        <td className="py-2 pr-3 text-blue-300 text-xs max-w-[140px] truncate">
-                          {item.after}
-                        </td>
+                        <td className="py-2 pr-3 text-white max-w-[120px] truncate">{item.adgroup}</td>
+                        <td className="py-2 pr-3 text-gray-400 text-xs max-w-[140px] truncate">{item.before}</td>
+                        <td className="py-2 pr-3 text-blue-300 text-xs max-w-[140px] truncate">{item.after}</td>
                         <td className="py-2 pr-3 text-right text-gray-300">
                           {item.before_roas != null ? `${item.before_roas}%` : '-'}
                         </td>
