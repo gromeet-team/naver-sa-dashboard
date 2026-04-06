@@ -7,6 +7,7 @@ import BidAdjustment from '@/components/tabs/BidAdjustment';
 import ABTest from '@/components/tabs/ABTest';
 import Keywords from '@/components/tabs/Keywords';
 import CronStatus from '@/components/tabs/CronStatus';
+import Insights from '@/components/tabs/Insights';
 
 const TABS = [
   { id: 'today', label: '오늘 현황' },
@@ -14,6 +15,7 @@ const TABS = [
   { id: 'ab', label: '소재 A/B' },
   { id: 'keywords', label: '키워드' },
   { id: 'cron', label: '크론 상태' },
+  { id: 'insights', label: '🧠 인사이트' },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -60,6 +62,7 @@ export default function Home() {
           {activeTab === 'ab' && <ABTest />}
           {activeTab === 'keywords' && <Keywords />}
           {activeTab === 'cron' && <CronStatus />}
+          {activeTab === 'insights' && <Insights />}
         </div>
       </main>
     </div>
