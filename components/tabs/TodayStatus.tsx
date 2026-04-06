@@ -51,19 +51,42 @@ export default function TodayStatus() {
     );
   }
 
-  // Latest roas per brand from history
+  // 노출0+클릭0+광고비0 그룹 제외
+  const activePlans = plans.filter(
+    (p) => !(p.stats_7d.clk_cnt === 0 && p.stats_7d.sales_amt === 0)
+  );
+
+  // Weighted-average ROAS per brand from plans (clk_cnt > 0, sales_amt 기반)
   const latestRoasByBrand: Record<string, number | null> = {};
   BRAND_KEYS.forEach((brand) => {
-    const brandHistory = history.filter((h) => h.brand === brand);
-    latestRoasByBrand[brand] =
-      brandHistory.length > 0 ? brandHistory[0].roas_pct : null;
+    const brandPlans = activePlans.filter(
+      (p) => p.brand === brand && p.stats_7d.clk_cnt > 0
+    );
+    if (brandPlans.length === 0) {
+      latestRoasByBrand[brand] = null;
+    } else {
+      const totalSales = brandPlans.reduce(
+        (sum, p) => sum + p.stats_7d.sales_amt,
+        0
+      );
+      if (totalSales === 0) {
+        latestRoasByBrand[brand] = null;
+      } else {
+        const weightedRoas =
+          brandPlans.reduce(
+            (sum, p) => sum + p.stats_7d.roas_pct * p.stats_7d.sales_amt,
+            0
+          ) / totalSales;
+        latestRoasByBrand[brand] = Math.round(weightedRoas);
+      }
+    }
   });
 
-  // BEP-below group count per brand from plans
+  // BEP-below group count per brand from activePlans
   const bepBelowCountByBrand: Record<string, number> = {};
   BRAND_KEYS.forEach((brand) => {
     const bep = settings?.brands[brand]?.bep_roas ?? 0;
-    bepBelowCountByBrand[brand] = plans.filter(
+    bepBelowCountByBrand[brand] = activePlans.filter(
       (p) => p.brand === brand && p.stats_7d.roas_pct < bep
     ).length;
   });
@@ -73,8 +96,8 @@ export default function TodayStatus() {
       ? BRAND_KEYS
       : BRAND_KEYS.filter((b) => b === selectedBrand);
 
-  // Anomaly table: BEP 이하 plans
-  const anomalyPlans = plans.filter((p) => {
+  // Anomaly table: BEP 이하 activePlans
+  const anomalyPlans = activePlans.filter((p) => {
     const bep = settings?.brands[p.brand]?.bep_roas ?? 0;
     const matchesBrand =
       selectedBrand === 'all' || p.brand === selectedBrand;

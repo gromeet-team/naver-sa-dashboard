@@ -56,10 +56,22 @@ export default function BidAdjustment() {
     return () => clearInterval(interval);
   }, [loadData, pollQueue]);
 
-  const filteredPlans =
+  const filteredPlans = (
     selectedBrand === 'all'
       ? plans
-      : plans.filter((p) => p.brand === selectedBrand);
+      : plans.filter((p) => p.brand === selectedBrand)
+  ).filter(
+    (p) => !(p.stats_7d.clk_cnt === 0 && p.stats_7d.sales_amt === 0)
+  );
+
+  // 노출O/클릭X: clk_cnt===0이지만 sales_amt>0인 그룹 (향후 imp_cnt 추가 시 활용)
+  const noClickPlans = (
+    selectedBrand === 'all'
+      ? plans
+      : plans.filter((p) => p.brand === selectedBrand)
+  ).filter(
+    (p) => p.stats_7d.clk_cnt === 0 && p.stats_7d.sales_amt > 0
+  );
 
   const filteredHistory =
     selectedBrand === 'all'
@@ -89,31 +101,56 @@ export default function BidAdjustment() {
 
   async function handleApprove() {
     const selectedPlans = filteredPlans.filter((_, i) => selected.has(i));
-    if (API_URL) {
-      try {
-        await fetch(`${API_URL}/api/approve`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plans: selectedPlans }),
-        });
-      } catch (e) {
-        console.error('Approve failed:', e);
-      }
-    } else {
-      console.log('승인 요청:', selectedPlans);
+    try {
+      await fetch(`${API_URL}/api/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: JSON.stringify({
+          type: 'shopping',
+          items: selectedPlans,
+          delay_minutes: 5,
+        }),
+      });
+    } catch (e) {
+      console.error('Approve failed:', e);
     }
     setSelected(new Set());
   }
 
   async function handleCancel() {
-    if (API_URL) {
-      try {
-        await fetch(`${API_URL}/api/cancel`, { method: 'POST' });
-      } catch (e) {
-        console.error('Cancel failed:', e);
-      }
-    } else {
-      console.log('실행 취소');
+    try {
+      await fetch(`${API_URL}/api/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: JSON.stringify({ queue_id: pendingQueue[0]?.id }),
+      });
+    } catch (e) {
+      console.error('Cancel failed:', e);
+    }
+  }
+
+  async function handleRollback(rec: (typeof history)[0]) {
+    try {
+      await fetch(`${API_URL}/api/rollback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'bypass-tunnel-reminder': 'true',
+        },
+        body: JSON.stringify({
+          brand: rec.brand,
+          adgroup_id: rec.adgroup_id,
+          target_bid: rec.prev_bid,
+        }),
+      });
+    } catch (e) {
+      console.error('Rollback failed:', e);
     }
   }
 
@@ -239,6 +276,49 @@ export default function BidAdjustment() {
         )}
       </Card>
 
+      {/* 노출O / 클릭X 소재교체 필요 섹션 */}
+      <Card>
+        <CardTitle>⚠️ 노출O / 클릭X 그룹 (소재교체 검토 필요)</CardTitle>
+        {noClickPlans.length === 0 ? (
+          <p className="text-gray-500 text-sm text-center py-8">
+            해당 그룹이 없습니다. (imp_cnt 데이터 추가 시 자동 표시)
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[#2a2d3e] text-gray-400 text-left">
+                  <th className="pb-2 pr-3 font-medium">브랜드</th>
+                  <th className="pb-2 pr-3 font-medium">광고그룹명</th>
+                  <th className="pb-2 pr-3 font-medium text-right">클릭수</th>
+                  <th className="pb-2 pr-3 font-medium text-right">광고비</th>
+                  <th className="pb-2 font-medium text-right">ROAS%</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#2a2d3e]">
+                {noClickPlans.map((plan, i) => (
+                  <tr key={i} className="hover:bg-[#1e2130] transition-colors">
+                    <td className="py-2 pr-3 text-gray-300">{plan.brand_name}</td>
+                    <td className="py-2 pr-3 text-white max-w-[160px] truncate">
+                      {plan.adgroup_name}
+                    </td>
+                    <td className="py-2 pr-3 text-right text-red-400">
+                      {plan.stats_7d.clk_cnt}
+                    </td>
+                    <td className="py-2 pr-3 text-right text-gray-300">
+                      {plan.stats_7d.sales_amt.toLocaleString()}원
+                    </td>
+                    <td className="py-2 text-right text-gray-300">
+                      {plan.stats_7d.roas_pct}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+
       {/* History table */}
       <Card>
         <CardTitle>변경 이력 ({filteredHistory.length}건)</CardTitle>
@@ -297,7 +377,7 @@ export default function BidAdjustment() {
                       </td>
                       <td className="py-2">
                         <button
-                          onClick={() => console.log('복원:', rec)}
+                          onClick={() => handleRollback(rec)}
                           className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
                         >
                           복원

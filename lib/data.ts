@@ -8,9 +8,15 @@ import type {
   KeywordExpansion,
 } from './types';
 
-async function fetchJson<T>(path: string, fallback: T): Promise<T> {
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
+
+const TUNNEL_HEADERS = {
+  'bypass-tunnel-reminder': 'true',
+};
+
+async function fetchJson<T>(url: string, fallback: T): Promise<T> {
   try {
-    const res = await fetch(path);
+    const res = await fetch(url, { headers: TUNNEL_HEADERS });
     if (!res.ok) return fallback;
     return (await res.json()) as T;
   } catch {
@@ -31,53 +37,38 @@ const defaultSettings: Settings = {
 };
 
 export async function fetchSettings(): Promise<Settings> {
-  return fetchJson<Settings>('/data/settings.json', defaultSettings);
+  return fetchJson<Settings>(`${API_URL}/api/settings`, defaultSettings);
 }
 
 export async function fetchPending(): Promise<PendingData> {
-  return fetchJson<PendingData>('/data/naver_sa_pending.json', {
+  return fetchJson<PendingData>(`${API_URL}/api/pending`, {
     created_at: '',
     approved: false,
     plans: [],
   });
 }
 
-export async function fetchHistory(brand: string): Promise<HistoryRecord[]> {
-  return fetchJson<HistoryRecord[]>(
-    `/data/sa_history/${brand}_sa_history.json`,
-    []
-  );
-}
-
 export async function fetchAllHistory(): Promise<HistoryRecord[]> {
-  const brands = ['kucham', 'uvid', 'meariset', 'foremong'];
-  const results = await Promise.all(brands.map((b) => fetchHistory(b)));
-  return results
-    .flat()
-    .sort(
-      (a, b) =>
-        new Date(b.executed_at).getTime() - new Date(a.executed_at).getTime()
-    );
+  return fetchJson<HistoryRecord[]>(`${API_URL}/api/history`, []);
 }
 
 export async function fetchPendingExecute(): Promise<PendingExecute> {
-  return fetchJson<PendingExecute>('/data/pending_execute.json', { queue: [] });
+  return fetchJson<PendingExecute>(`${API_URL}/api/pending-execute`, {
+    queue: [],
+  });
 }
 
 export async function fetchCronStatus(): Promise<CronStatus> {
-  return fetchJson<CronStatus>('/data/cron_status.json', {
+  return fetchJson<CronStatus>(`${API_URL}/api/cron-status`, {
     updated_at: '',
     crons: [],
   });
 }
 
 export async function fetchKeywordLearning(): Promise<KeywordLearning[]> {
-  return fetchJson<KeywordLearning[]>('/data/keyword_learning.json', []);
+  return fetchJson<KeywordLearning[]>(`${API_URL}/api/keyword-learning`, []);
 }
 
 export async function fetchKeywordExpansion(): Promise<KeywordExpansion[]> {
-  return fetchJson<KeywordExpansion[]>(
-    '/data/keyword_expansion_candidates.json',
-    []
-  );
+  return fetchJson<KeywordExpansion[]>(`${API_URL}/api/keyword-expansion`, []);
 }
