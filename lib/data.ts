@@ -28,7 +28,7 @@ async function fetchJson<T>(url: string, fallback: T): Promise<T> {
 
 const defaultSettings: Settings = {
   brands: {
-    kucham: { bep_roas: 220, target_roas: 1000, keyword_click_threshold: 30 },
+    kucham: { bep_roas: 220, target_roas: 300, keyword_click_threshold: 30 },
     uvid: { bep_roas: 185, target_roas: 300, keyword_click_threshold: 30 },
     meariset: { bep_roas: 176, target_roas: 176, keyword_click_threshold: 30 },
     foremong: { bep_roas: 200, target_roas: 300, keyword_click_threshold: 30 },

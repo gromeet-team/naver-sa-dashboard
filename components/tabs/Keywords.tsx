@@ -30,6 +30,7 @@ export default function Keywords() {
   const [learning, setLearning] = useState<KeywordLearning[]>([]);
   const [expansion, setExpansion] = useState<KeywordExpansion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     Promise.all([fetchKeywordLearning(), fetchKeywordExpansion()]).then(
@@ -41,6 +42,11 @@ export default function Keywords() {
     );
   }, []);
 
+  // 탭 전환 시 선택 초기화
+  useEffect(() => {
+    setSelectedRows(new Set());
+  }, [subTab, selectedBrand]);
+
   const filteredLearning =
     selectedBrand === 'all'
       ? learning
@@ -51,11 +57,32 @@ export default function Keywords() {
       ? expansion
       : expansion.filter((k) => normBrand(k.brand) === selectedBrand);
 
+  const pendingExpansion = filteredExpansion.filter((k) => k.status === 'pending');
+
+  // 전체 선택 (현재 서브탭 기준)
+  const currentRows = subTab === 'a' ? filteredLearning : filteredExpansion;
+  const allSelected = currentRows.length > 0 && currentRows.every((_, i) => selectedRows.has(i));
+
+  function toggleAll() {
+    if (allSelected) {
+      setSelectedRows(new Set());
+    } else {
+      setSelectedRows(new Set(currentRows.map((_, i) => i)));
+    }
+  }
+
+  function toggleOne(i: number) {
+    const next = new Set(selectedRows);
+    if (next.has(i)) next.delete(i);
+    else next.add(i);
+    setSelectedRows(next);
+  }
+
   function handleBulkApprove() {
-    console.log(
-      '일괄 승인:',
-      filteredExpansion.filter((k) => k.status === 'pending')
-    );
+    const selected = pendingExpansion.filter((_, i) => selectedRows.has(i));
+    console.log('일괄 승인:', selected);
+    // TODO: API 연결
+    setSelectedRows(new Set());
   }
 
   return (
@@ -90,7 +117,12 @@ export default function Keywords() {
         </div>
       ) : subTab === 'a' ? (
         <Card>
-          <CardTitle>키워드 학습 현황</CardTitle>
+          <div className="flex items-center justify-between mb-4">
+            <CardTitle>키워드 학습 현황</CardTitle>
+            {selectedRows.size > 0 && (
+              <span className="text-sm text-gray-400">{selectedRows.size}개 선택됨</span>
+            )}
+          </div>
           {filteredLearning.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="text-3xl mb-3">⏳</div>
@@ -104,6 +136,14 @@ export default function Keywords() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[#2a2d3e] text-gray-400 text-left">
+                    <th className="pb-2 pr-3">
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        onChange={toggleAll}
+                        className="accent-blue-500 cursor-pointer"
+                      />
+                    </th>
                     <th className="pb-2 pr-4 font-medium">키워드</th>
                     <th className="pb-2 pr-4 font-medium">브랜드</th>
                     <th className="pb-2 pr-4 font-medium">상태</th>
@@ -114,10 +154,22 @@ export default function Keywords() {
                 </thead>
                 <tbody className="divide-y divide-[#2a2d3e]">
                   {filteredLearning.map((kw, i) => (
-                    <tr key={i} className="hover:bg-[#1e2130] transition-colors">
-                      <td className="py-2 pr-4 text-white font-medium">
-                        {kw.keyword}
+                    <tr
+                      key={i}
+                      className={`hover:bg-[#1e2130] transition-colors cursor-pointer ${
+                        selectedRows.has(i) ? 'bg-blue-950/30' : ''
+                      }`}
+                      onClick={() => toggleOne(i)}
+                    >
+                      <td className="py-2 pr-3" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.has(i)}
+                          onChange={() => toggleOne(i)}
+                          className="accent-blue-500 cursor-pointer"
+                        />
                       </td>
+                      <td className="py-2 pr-4 text-white font-medium">{kw.keyword}</td>
                       <td className="py-2 pr-4 text-gray-300">{kw.brand}</td>
                       <td className="py-2 pr-4">
                         <StatusBadge status={kw.status} />
@@ -125,12 +177,8 @@ export default function Keywords() {
                       <td className="py-2 pr-4 text-right text-gray-300">
                         {kw.clk_7d.toLocaleString()}
                       </td>
-                      <td className="py-2 pr-4 text-right text-gray-300">
-                        {kw.roas_7d}%
-                      </td>
-                      <td className="py-2 text-gray-400 text-xs">
-                        {kw.verdict_at}
-                      </td>
+                      <td className="py-2 pr-4 text-right text-gray-300">{kw.roas_7d}%</td>
+                      <td className="py-2 text-gray-400 text-xs">{kw.verdict_at}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -142,14 +190,32 @@ export default function Keywords() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <CardTitle>키워드 등록 관리</CardTitle>
-            {filteredExpansion.some((k) => k.status === 'pending') && (
-              <button
-                onClick={handleBulkApprove}
-                className="text-sm bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded transition-colors"
-              >
-                일괄 승인
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {selectedRows.size > 0 && (
+                <span className="text-sm text-gray-400">{selectedRows.size}개 선택됨</span>
+              )}
+              {pendingExpansion.some((_, i) => selectedRows.has(i)) && (
+                <button
+                  onClick={handleBulkApprove}
+                  className="text-sm bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded transition-colors"
+                >
+                  선택 승인 ({selectedRows.size}건)
+                </button>
+              )}
+              {pendingExpansion.length > 0 && selectedRows.size === 0 && (
+                <button
+                  onClick={() => {
+                    const pendingIdxs = filteredExpansion
+                      .map((k, i) => (k.status === 'pending' ? i : -1))
+                      .filter((i) => i !== -1);
+                    setSelectedRows(new Set(pendingIdxs));
+                  }}
+                  className="text-sm bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded transition-colors"
+                >
+                  일괄 승인
+                </button>
+              )}
+            </div>
           </div>
           {filteredExpansion.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -164,6 +230,14 @@ export default function Keywords() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[#2a2d3e] text-gray-400 text-left">
+                    <th className="pb-2 pr-3">
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        onChange={toggleAll}
+                        className="accent-blue-500 cursor-pointer"
+                      />
+                    </th>
                     <th className="pb-2 pr-4 font-medium">키워드</th>
                     <th className="pb-2 pr-4 font-medium">브랜드</th>
                     <th className="pb-2 pr-4 font-medium">소스</th>
@@ -173,10 +247,22 @@ export default function Keywords() {
                 </thead>
                 <tbody className="divide-y divide-[#2a2d3e]">
                   {filteredExpansion.map((kw, i) => (
-                    <tr key={i} className="hover:bg-[#1e2130] transition-colors">
-                      <td className="py-2 pr-4 text-white font-medium">
-                        {kw.keyword}
+                    <tr
+                      key={i}
+                      className={`hover:bg-[#1e2130] transition-colors cursor-pointer ${
+                        selectedRows.has(i) ? 'bg-blue-950/30' : ''
+                      }`}
+                      onClick={() => toggleOne(i)}
+                    >
+                      <td className="py-2 pr-3" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.has(i)}
+                          onChange={() => toggleOne(i)}
+                          className="accent-blue-500 cursor-pointer"
+                        />
                       </td>
+                      <td className="py-2 pr-4 text-white font-medium">{kw.keyword}</td>
                       <td className="py-2 pr-4 text-gray-300">{kw.brand}</td>
                       <td className="py-2 pr-4 text-gray-400">{kw.source}</td>
                       <td className="py-2 pr-4 text-gray-400">{kw.category}</td>
