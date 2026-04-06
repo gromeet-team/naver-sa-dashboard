@@ -1,63 +1,65 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { BrandFilterToggle } from '@/components/BrandFilter';
+import TodayStatus from '@/components/tabs/TodayStatus';
+import BidAdjustment from '@/components/tabs/BidAdjustment';
+import ABTest from '@/components/tabs/ABTest';
+import Keywords from '@/components/tabs/Keywords';
+import CronStatus from '@/components/tabs/CronStatus';
+
+const TABS = [
+  { id: 'today', label: '오늘 현황' },
+  { id: 'bid', label: '입찰가 조정' },
+  { id: 'ab', label: '소재 A/B' },
+  { id: 'keywords', label: '키워드' },
+  { id: 'cron', label: '크론 상태' },
+] as const;
+
+type TabId = (typeof TABS)[number]['id'];
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<TabId>('today');
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="flex flex-col min-h-screen bg-[#0f1117]">
+      {/* Header */}
+      <header className="bg-[#161b27] border-b border-[#2a2d3e] px-4 md:px-6 py-4">
+        <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row md:items-center gap-3 md:justify-between">
+          <h1 className="text-lg md:text-xl font-bold text-white tracking-tight">
+            네이버 SA 대시보드
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+          <BrandFilterToggle />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      {/* Tab Nav */}
+      <nav className="bg-[#161b27] border-b border-[#2a2d3e] px-4 md:px-6 overflow-x-auto">
+        <div className="max-w-screen-xl mx-auto flex gap-0">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
+                activeTab === tab.id
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {/* Content */}
+      <main className="flex-1 px-4 md:px-6 py-6">
+        <div className="max-w-screen-xl mx-auto">
+          {activeTab === 'today' && <TodayStatus />}
+          {activeTab === 'bid' && <BidAdjustment />}
+          {activeTab === 'ab' && <ABTest />}
+          {activeTab === 'keywords' && <Keywords />}
+          {activeTab === 'cron' && <CronStatus />}
         </div>
       </main>
     </div>
