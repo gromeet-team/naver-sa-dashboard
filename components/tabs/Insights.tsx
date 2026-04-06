@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 const TUNNEL_HEADERS = { 'bypass-tunnel-reminder': 'true' };
 
-type ActionStatus = 'pending' | 'in_progress' | 'done' | 'review' | 'dismissed';
+type ActionStatus = 'pending' | 'in_progress' | 'tracking' | 'done' | 'review' | 'dismissed';
 type ActionPriority = 'high' | 'medium' | 'low';
 
 interface NextAction {
@@ -59,7 +59,8 @@ const BRAND_MAP: Record<string, string> = {
 function normBrand(b: string) { return b === 'betterworld' ? 'uvid' : b; }
 
 const STATUS_CONFIG: Record<ActionStatus, { label: string; color: string; next: ActionStatus | null }> = {
-  pending:     { label: '📋 미처리',   color: 'text-gray-400',  next: 'in_progress' },
+  pending:     { label: '📋 미처리',   color: 'text-gray-400',   next: 'in_progress' },
+  tracking:    { label: '⏳ 추적중',   color: 'text-gray-400',   next: 'in_progress' },
   in_progress: { label: '🔨 진행중',   color: 'text-yellow-400', next: 'done' },
   done:        { label: '✅ 완료',     color: 'text-green-400',  next: 'review' },
   review:      { label: '🔁 재검토',   color: 'text-blue-400',   next: 'in_progress' },
@@ -138,7 +139,7 @@ export default function Insights() {
   );
 
   const sortedActions = [...filteredActions].sort((a, b) => {
-    const sOrder: Record<ActionStatus, number> = { pending: 0, in_progress: 1, review: 2, done: 3, dismissed: 4 };
+    const sOrder: Record<ActionStatus, number> = { pending: 0, tracking: 0, in_progress: 1, review: 2, done: 3, dismissed: 4 };
     const pOrder: Record<ActionPriority, number> = { high: 0, medium: 1, low: 2 };
     if (sOrder[a.status] !== sOrder[b.status]) return sOrder[a.status] - sOrder[b.status];
     return pOrder[a.priority] - pOrder[b.priority];
