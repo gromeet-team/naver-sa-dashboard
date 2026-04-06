@@ -41,6 +41,7 @@ export default function TodayStatus() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [history, setHistory] = useState<HistoryRecord[]>([]);
+  const [pendingCreatedAt, setPendingCreatedAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export default function TodayStatus() {
       ([s, p, h]) => {
         setSettings(s);
         setPlans(p.plans);
+        setPendingCreatedAt(p.created_at ?? null);
         setHistory(h);
         setLoading(false);
       }
@@ -64,8 +66,16 @@ export default function TodayStatus() {
 
   // 노출0+클릭0+광고비0 그룹 제외
   const activePlans = plans.filter(
-    (p) => !(p.stats_7d.clk_cnt === 0 && p.stats_7d.sales_amt === 0)
+    (p) => !((p.stats_7d.imp_cnt ?? 0) === 0 && p.stats_7d.sales_amt === 0)
   );
+
+  // ROAS 0% (광고비는 있는데 전환 없는) 그룹 수 per brand
+  const zeroRoasByBrand: Record<string, number> = {};
+  BRAND_KEYS.forEach((brand) => {
+    zeroRoasByBrand[brand] = activePlans.filter(
+      (p) => normBrand(p.brand) === brand && p.stats_7d.sales_amt > 0 && p.stats_7d.roas_pct === 0
+    ).length;
+  });
 
   // Weighted-average ROAS per brand from plans (clk_cnt > 0, sales_amt 기반)
   const latestRoasByBrand: Record<string, number | null> = {};
@@ -192,6 +202,44 @@ export default function TodayStatus() {
           );
         })}
       </div>
+
+      {/* 데이터 수집 현황 */}
+      <Card>
+        <CardTitle>📊 데이터 수집 현황</CardTitle>
+        <div className="mt-3 space-y-2 text-sm">
+          <div className="text-gray-400">
+            마지막 수집:{' '}
+            <span className="text-white">
+              {pendingCreatedAt ? pendingCreatedAt.replace('T', ' ').slice(0, 16) : '-'}
+            </span>
+            {pendingCreatedAt && (() => {
+              const diffH = (Date.now() - new Date(pendingCreatedAt).getTime()) / 3600000;
+              return diffH > 6 ? (
+                <span className="ml-2 text-yellow-400">⚠️ {Math.round(diffH)}시간 전 (오래된 데이터)</span>
+              ) : null;
+            })()}
+          </div>
+          {BRAND_KEYS.map((brand) => {
+            const zero = zeroRoasByBrand[brand] ?? 0;
+            const total = activePlans.filter((p) => normBrand(p.brand) === brand).length;
+            return (
+              <div key={brand} className="flex items-center gap-3 text-gray-300">
+                <span className="w-16 font-medium">{BRAND_LABELS[brand]}</span>
+                <span className="text-gray-500">{total}개 그룹</span>
+                {total === 0 && (
+                  <span className="text-red-400 text-xs">❌ 데이터 없음 — API 연동 확인</span>
+                )}
+                {total > 0 && zero >= 3 && (
+                  <span className="text-yellow-400 text-xs">⚠️ ROAS 0% {zero}개 — 소재/랜딩 확인 권장</span>
+                )}
+                {total > 0 && zero > 0 && zero < 3 && (
+                  <span className="text-gray-500 text-xs">ROAS 0% {zero}개</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </Card>
 
       {/* 입찰가 조정 대상 */}
       <Card>

@@ -18,6 +18,7 @@ export interface Settings {
 
 export interface PlanStats7d {
   clk_cnt: number;
+  imp_cnt?: number;
   sales_amt: number;
   conv_amt: number;
   purchase_conv_amt: number;

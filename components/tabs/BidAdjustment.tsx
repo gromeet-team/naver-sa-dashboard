@@ -19,12 +19,14 @@ const BRAND_MAP: Record<string, string> = {
 function normBrand(b: string) { return BRAND_MAP[b] ?? b; }
 
 function calcVerdict(
-  d7Roas: number | null,
+  d7Roas: number | null | undefined,
+  d3Roas: number | null | undefined,
   preRoas: number
 ): { label: string; variant: 'green' | 'red' | 'gray' } {
-  if (d7Roas === null) return { label: '⏳ 판정중', variant: 'gray' };
+  const roas = d7Roas ?? d3Roas ?? null;
+  if (roas === null) return { label: '⏳ 판정중', variant: 'gray' };
   if (preRoas === 0) return { label: '➖ 유지', variant: 'gray' };
-  const diff = ((d7Roas - preRoas) / preRoas) * 100;
+  const diff = ((roas - preRoas) / preRoas) * 100;
   if (diff >= 10) return { label: '🔼 상승', variant: 'green' };
   if (diff <= -10) return { label: '🔽 하락', variant: 'red' };
   return { label: '➖ 유지', variant: 'gray' };
@@ -66,16 +68,16 @@ export default function BidAdjustment() {
       ? plans
       : plans.filter((p) => normBrand(p.brand) === selectedBrand)
   ).filter(
-    (p) => !(p.stats_7d.clk_cnt === 0 && p.stats_7d.sales_amt === 0)
+    (p) => !((p.stats_7d.imp_cnt ?? 0) === 0 && p.stats_7d.sales_amt === 0)
   );
 
-  // 노출O/클릭X: clk_cnt===0이지만 sales_amt>0인 그룹 (향후 imp_cnt 추가 시 활용)
+  // 노출O/클릭X: imp_cnt>0이지만 clk_cnt===0인 그룹
   const noClickPlans = (
     selectedBrand === 'all'
       ? plans
       : plans.filter((p) => normBrand(p.brand) === selectedBrand)
   ).filter(
-    (p) => p.stats_7d.clk_cnt === 0 && p.stats_7d.sales_amt > 0
+    (p) => (p.stats_7d.imp_cnt ?? 0) > 0 && p.stats_7d.clk_cnt === 0
   );
 
   const filteredHistory =
@@ -342,6 +344,8 @@ export default function BidAdjustment() {
                   <th className="pb-2 pr-3 font-medium text-right">입찰가 변동</th>
                   <th className="pb-2 pr-3 font-medium text-right">ROAS%</th>
                   <th className="pb-2 pr-3 font-medium">사유</th>
+                  <th className="pb-2 pr-3 font-medium text-right">D+1 ROAS</th>
+                  <th className="pb-2 pr-3 font-medium text-right">D+3 ROAS</th>
                   <th className="pb-2 pr-3 font-medium text-right">D+7 ROAS</th>
                   <th className="pb-2 pr-3 font-medium">효율판정</th>
                   <th className="pb-2 font-medium"></th>
@@ -349,7 +353,7 @@ export default function BidAdjustment() {
               </thead>
               <tbody className="divide-y divide-[#2a2d3e]">
                 {filteredHistory.map((rec, i) => {
-                  const verdict = calcVerdict(rec.d7_roas, rec.pre_change_roas_7d);
+                  const verdict = calcVerdict(rec.d7_roas, rec.d3_roas, rec.pre_change_roas_7d);
                   return (
                     <tr
                       key={i}
@@ -375,7 +379,13 @@ export default function BidAdjustment() {
                         {rec.reason}
                       </td>
                       <td className="py-2 pr-3 text-right text-gray-300">
-                        {rec.d7_roas !== null ? `${rec.d7_roas}%` : '-'}
+                        {rec.d1_roas !== null && rec.d1_roas !== undefined ? `${rec.d1_roas}%` : '-'}
+                      </td>
+                      <td className="py-2 pr-3 text-right text-gray-300">
+                        {rec.d3_roas !== null && rec.d3_roas !== undefined ? `${rec.d3_roas}%` : '-'}
+                      </td>
+                      <td className="py-2 pr-3 text-right text-gray-300">
+                        {rec.d7_roas !== null && rec.d7_roas !== undefined ? `${rec.d7_roas}%` : '-'}
                       </td>
                       <td className="py-2 pr-3">
                         <Badge variant={verdict.variant}>{verdict.label}</Badge>
