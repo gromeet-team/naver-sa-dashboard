@@ -51,7 +51,8 @@ export async function fetchPending(): Promise<PendingData> {
 }
 
 export async function fetchAllHistory(): Promise<HistoryRecord[]> {
-  return fetchJson<HistoryRecord[]>(`${API_URL}/api/history`, []);
+  const data = await fetchJson<HistoryRecord[] | object>(`${API_URL}/api/history`, []);
+  return Array.isArray(data) ? data : [];
 }
 
 export async function fetchPendingExecute(): Promise<PendingExecute> {
@@ -68,11 +69,13 @@ export async function fetchCronStatus(): Promise<CronStatus> {
 }
 
 export async function fetchKeywordLearning(): Promise<KeywordLearning[]> {
-  return fetchJson<KeywordLearning[]>(`${API_URL}/api/keyword-learning`, []);
+  const data = await fetchJson<KeywordLearning[] | object>(`${API_URL}/api/keyword-learning`, []);
+  return Array.isArray(data) ? data : [];
 }
 
 export async function fetchKeywordExpansion(): Promise<KeywordExpansion[]> {
-  return fetchJson<KeywordExpansion[]>(`${API_URL}/api/keyword-expansion`, []);
+  const data = await fetchJson<KeywordExpansion[] | object>(`${API_URL}/api/keyword-expansion`, []);
+  return Array.isArray(data) ? data : [];
 }
 
 export async function fetchBudget(): Promise<BudgetData> {
@@ -80,5 +83,6 @@ export async function fetchBudget(): Promise<BudgetData> {
 }
 
 export async function fetchCreativeHistory(): Promise<CreativeHistoryItem[]> {
-  return fetchJson<CreativeHistoryItem[]>(`${API_URL}/api/creative-history`, []);
+  const data = await fetchJson<CreativeHistoryItem[] | object>(`${API_URL}/api/creative-history`, []);
+  return Array.isArray(data) ? data : [];
 }
