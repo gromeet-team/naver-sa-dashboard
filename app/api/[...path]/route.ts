@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = 'https://naver-sa-api-benvis.loca.lt';
+const BACKEND_URL = 'https://naver-sa-api-gromeet.loca.lt';
 
 export async function GET(request: NextRequest) {
   const path = request.nextUrl.pathname; // /api/xxx
