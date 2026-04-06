@@ -251,6 +251,156 @@ def save_settings(new_settings: dict):
     return {"ok": True}
 
 
+# ── 예산 소진율 ───────────────────────────────────────────
+import hmac as _hmac, hashlib as _hashlib, base64 as _base64, urllib.request as _urllib_req, urllib.parse as _urllib_parse
+
+BRAND_CREDS = {
+    "kucham": {
+        "customer_id":    os.environ.get("NAVER_SA_CUSTOMER_ID", "1807556"),
+        "access_license": os.environ.get("NAVER_SA_ACCESS_LICENSE", ""),
+        "secret_key":     os.environ.get("NAVER_SA_SECRET_KEY", ""),
+        "label": "쿠참",
+    },
+    "uvid": {
+        "customer_id":    os.environ.get("NAVER_SA_BW_CUSTOMER_ID", "3527181"),
+        "access_license": os.environ.get("NAVER_SA_BW_ACCESS_LICENSE", ""),
+        "secret_key":     os.environ.get("NAVER_SA_BW_SECRET_KEY", ""),
+        "label": "유비드",
+    },
+    "meariset": {
+        "customer_id":    os.environ.get("NAVER_SA_MS_CUSTOMER_ID", "1910059"),
+        "access_license": os.environ.get("NAVER_SA_MS_ACCESS_LICENSE", ""),
+        "secret_key":     os.environ.get("NAVER_SA_MS_SECRET_KEY", ""),
+        "label": "메아리셋",
+    },
+    "foremong": {
+        "customer_id":    "1748252",
+        "access_license": "01000000003dc8d89f2198f105f99520ecf3412b0f0d90bc89f6829ffa13f78f8f9246c3a4",
+        "secret_key":     "AQAAAAA9yNifIZjxBfmVIOzzQSsPX2tVsb7x2dm4X407+Di2Yw==",
+        "label": "포레몽",
+    },
+}
+
+_NAVER_SA_BASE = "https://api.naver.com"
+_budget_cache: dict = {}
+_budget_cache_at: float = 0.0
+_BUDGET_TTL = 300  # 5분 캐시
+
+def _sa_request(creds: dict, method: str, path: str, query_str: str = "") -> Any:
+    ts = str(int(time.time() * 1000))
+    msg = f"{ts}.{method}.{path}"
+    sig = _base64.b64encode(
+        _hmac.new(creds["secret_key"].encode(), msg.encode(), _hashlib.sha256).digest()
+    ).decode()
+    url = _NAVER_SA_BASE + path + (f"?{query_str}" if query_str else "")
+    req = _urllib_req.Request(url, method=method)
+    req.add_header("X-Timestamp", ts)
+    req.add_header("X-API-KEY", creds["access_license"])
+    req.add_header("X-Customer", creds["customer_id"])
+    req.add_header("X-Signature", sig)
+    req.add_header("Content-Type", "application/json")
+    try:
+        with _urllib_req.urlopen(req, timeout=8) as r:
+            return json.loads(r.read())
+    except Exception:
+        return None
+
+def _fetch_budget_for_brand(brand_key: str) -> dict:
+    creds = BRAND_CREDS.get(brand_key)
+    if not creds or not creds["access_license"]:
+        return {"error": "no_credentials"}
+    campaigns = _sa_request(creds, "GET", "/ncc/campaigns")
+    if not isinstance(campaigns, list):
+        return {"error": "api_error"}
+    eligible = [c for c in campaigns if c.get("status") == "ELIGIBLE" and int(c.get("dailyBudget", 0) or 0) > 0]
+    if not eligible:
+        return {"daily_budget": 0, "today_cost": 0, "ratio": 0, "campaigns": []}
+
+    import datetime as _dt
+    today = _dt.date.today().strftime("%Y%m%d")
+    total_budget = 0
+    total_cost = 0
+    campaign_details = []
+    for cmp in eligible:
+        cmp_id = cmp["nccCampaignId"]
+        daily_budget = int(cmp.get("dailyBudget", 0) or 0)
+        fields_enc = _urllib_parse.quote(json.dumps(["salesAmt"]))
+        tr_enc = _urllib_parse.quote(json.dumps({"since": today, "until": today}))
+        qs = f"ids={cmp_id}&fields={fields_enc}&timeUnit=TOTAL&timeRange={tr_enc}&type=CAMPAIGN"
+        stats = _sa_request(creds, "GET", "/stats", qs)
+        today_cost = 0
+        if isinstance(stats, dict):
+            data = stats.get("data", [])
+            if data:
+                today_cost = int(data[0].get("salesAmt", 0) or 0)
+        total_budget += daily_budget
+        total_cost += today_cost
+        ratio = round(today_cost / daily_budget * 100, 1) if daily_budget > 0 else 0
+        campaign_details.append({
+            "name": cmp.get("name", ""),
+            "daily_budget": daily_budget,
+            "today_cost": today_cost,
+            "ratio": ratio,
+        })
+    overall_ratio = round(total_cost / total_budget * 100, 1) if total_budget > 0 else 0
+    # 예상 소진 시각 (선형 추정)
+    import datetime as _dt2
+    now_h = _dt2.datetime.now().hour + _dt2.datetime.now().minute / 60
+    if total_cost > 0 and now_h > 0:
+        burn_rate_per_h = total_cost / now_h
+        remaining = total_budget - total_cost
+        hours_left = remaining / burn_rate_per_h if burn_rate_per_h > 0 else 99
+        est_exhaust_h = now_h + hours_left
+        est_hhmm = f"{int(est_exhaust_h):02d}:{int((est_exhaust_h % 1) * 60):02d}" if est_exhaust_h < 24 else "24시 이후"
+    else:
+        est_hhmm = None
+    return {
+        "daily_budget": total_budget,
+        "today_cost": total_cost,
+        "ratio": overall_ratio,
+        "est_exhaust": est_hhmm,
+        "campaigns": campaign_details,
+    }
+
+@app.get("/api/budget")
+def get_budget():
+    global _budget_cache, _budget_cache_at
+    now = time.time()
+    if now - _budget_cache_at < _BUDGET_TTL and _budget_cache:
+        return _budget_cache
+    result = {}
+    for brand_key in BRAND_CREDS:
+        result[brand_key] = _fetch_budget_for_brand(brand_key)
+    result["fetched_at"] = datetime.now(timezone.utc).isoformat()
+    _budget_cache = result
+    _budget_cache_at = now
+    return result
+
+
+# ── 소재 변경 이력 ─────────────────────────────────────────
+CREATIVE_HISTORY_FILE = DATA_DIR / "creative_history.json"
+
+@app.get("/api/creative-history")
+def get_creative_history():
+    return read_json(CREATIVE_HISTORY_FILE, [])
+
+@app.post("/api/creative-history")
+def save_creative_history(data: dict):
+    history = read_json(CREATIVE_HISTORY_FILE, [])
+    # d7_roas 업데이트 또는 신규 항목 추가
+    if data.get("action") == "update_roas":
+        for item in history:
+            if item.get("adgroup") == data.get("adgroup") and item.get("changed_at") == data.get("changed_at"):
+                item["d7_roas"] = data.get("d7_roas")
+                item["verdict"] = data.get("verdict")
+        write_json(CREATIVE_HISTORY_FILE, history)
+        return {"ok": True}
+    # 신규 추가
+    history.append(data)
+    write_json(CREATIVE_HISTORY_FILE, history)
+    return {"ok": True}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=9003, reload=False)

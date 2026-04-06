@@ -6,6 +6,8 @@ import type {
   CronStatus,
   KeywordLearning,
   KeywordExpansion,
+  BudgetData,
+  CreativeHistoryItem,
 } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
@@ -71,4 +73,12 @@ export async function fetchKeywordLearning(): Promise<KeywordLearning[]> {
 
 export async function fetchKeywordExpansion(): Promise<KeywordExpansion[]> {
   return fetchJson<KeywordExpansion[]>(`${API_URL}/api/keyword-expansion`, []);
+}
+
+export async function fetchBudget(): Promise<BudgetData> {
+  return fetchJson<BudgetData>(`${API_URL}/api/budget`, {});
+}
+
+export async function fetchCreativeHistory(): Promise<CreativeHistoryItem[]> {
+  return fetchJson<CreativeHistoryItem[]>(`${API_URL}/api/creative-history`, []);
 }

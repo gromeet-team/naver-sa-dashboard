@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchSettings, fetchPending, fetchAllHistory } from '@/lib/data';
+import { fetchSettings, fetchPending, fetchAllHistory, fetchBudget } from '@/lib/data';
 import { useBrandFilter } from '@/components/BrandFilter';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import type { Settings, Plan, HistoryRecord } from '@/lib/types';
+import type { Settings, Plan, HistoryRecord, BudgetData } from '@/lib/types';
 
 const BRAND_KEYS = ['kucham', 'uvid', 'meariset', 'foremong'] as const;
 const BRAND_LABELS: Record<string, string> = {
@@ -42,15 +42,17 @@ export default function TodayStatus() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [history, setHistory] = useState<HistoryRecord[]>([]);
   const [pendingCreatedAt, setPendingCreatedAt] = useState<string | null>(null);
+  const [budget, setBudget] = useState<BudgetData>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([fetchSettings(), fetchPending(), fetchAllHistory()]).then(
-      ([s, p, h]) => {
+    Promise.all([fetchSettings(), fetchPending(), fetchAllHistory(), fetchBudget()]).then(
+      ([s, p, h, b]) => {
         setSettings(s);
         setPlans(p.plans);
         setPendingCreatedAt(p.created_at ?? null);
         setHistory(h);
+        setBudget(b);
         setLoading(false);
       }
     );
@@ -197,6 +199,20 @@ export default function TodayStatus() {
                     {bepBelow}개
                   </span>
                 </div>
+                {(() => {
+                  const bd = budget[brand] as { ratio?: number; today_cost?: number; daily_budget?: number; est_exhaust?: string | null; error?: string } | undefined;
+                  if (!bd || bd.error) return null;
+                  const ratio = bd.ratio ?? 0;
+                  return (
+                    <div className="flex justify-between text-sm border-t border-[#2a2d3e] pt-2 mt-2">
+                      <span className="text-gray-400">예산 소진율</span>
+                      <span className={ratio >= 80 ? 'text-red-400 font-semibold' : ratio >= 50 ? 'text-yellow-400' : 'text-gray-300'}>
+                        {ratio}%
+                        {bd.est_exhaust && <span className="text-gray-500 text-xs ml-1">({bd.est_exhaust} 소진예상)</span>}
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
             </Card>
           );

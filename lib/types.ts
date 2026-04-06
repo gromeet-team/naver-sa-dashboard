@@ -107,6 +107,37 @@ export interface KeywordLearning {
   verdict_at: string;
 }
 
+export interface BudgetCampaign {
+  name: string;
+  daily_budget: number;
+  today_cost: number;
+  ratio: number;
+}
+
+export interface BudgetBrand {
+  daily_budget?: number;
+  today_cost?: number;
+  ratio?: number;
+  est_exhaust?: string | null;
+  campaigns?: BudgetCampaign[];
+  error?: string;
+}
+
+export type BudgetData = Record<string, BudgetBrand | string>;
+
+export interface CreativeHistoryItem {
+  changed_at: string;
+  brand: string;
+  campaign: string;
+  adgroup: string;
+  before: string;
+  after: string;
+  before_roas?: number | null;
+  d7_roas?: number | null;
+  verdict?: string | null;
+  note?: string;
+}
+
 export interface KeywordExpansion {
   keyword: string;
   brand: string;
