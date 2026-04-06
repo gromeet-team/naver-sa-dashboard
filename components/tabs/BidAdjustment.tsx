@@ -65,13 +65,27 @@ export default function BidAdjustment() {
     loadData();
   }, [loadData]);
 
-  const filteredPlans = (
-    selectedBrand === 'all'
-      ? plans
-      : plans.filter((p) => normBrand(p.brand) === selectedBrand)
-  ).filter(
+  const CLICK_THRESHOLD = 30;
+
+  const brandPlans = selectedBrand === 'all'
+    ? plans
+    : plans.filter((p) => normBrand(p.brand) === selectedBrand);
+
+  // 노출/매출 모두 0인 유령 항목 제외
+  const activePlans = brandPlans.filter(
     (p) => !((p.stats_7d.imp_cnt ?? 0) === 0 && p.stats_7d.sales_amt === 0)
   );
+
+  // 클릭 < 30 → 데이터 부족 스킵
+  const filteredPlans = activePlans.filter((p) => (p.stats_7d.clk_cnt ?? 0) >= CLICK_THRESHOLD);
+  const skippedPlans  = activePlans.filter((p) => (p.stats_7d.clk_cnt ?? 0) <  CLICK_THRESHOLD);
+
+  // 스킵 브랜드별 집계
+  const skippedByBrand = skippedPlans.reduce<Record<string, number>>((acc, p) => {
+    const key = p.brand_name || p.brand;
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
 
   const noClickPlans = (
     selectedBrand === 'all'
@@ -134,6 +148,18 @@ export default function BidAdjustment() {
 
   return (
     <div className="space-y-6">
+
+      {/* 스킵 요약 */}
+      {Object.keys(skippedByBrand).length > 0 && (
+        <div className="flex flex-wrap gap-2 px-4 py-2.5 bg-[#161b27] border border-[#2a2d3e] rounded-lg text-xs text-gray-500">
+          <span className="text-gray-600 font-medium">데이터 부족 스킵 (클릭 &lt;{CLICK_THRESHOLD}회):</span>
+          {Object.entries(skippedByBrand).map(([brand, cnt]) => (
+            <span key={brand} className="bg-[#1e2130] px-2 py-0.5 rounded text-gray-400">
+              {brand} {cnt}개
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* 입찰가 조정 후보 */}
       <Card>
