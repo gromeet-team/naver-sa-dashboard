@@ -107,14 +107,24 @@ export default function TodayStatus() {
       ? BRAND_KEYS
       : BRAND_KEYS.filter((b) => b === selectedBrand);
 
-  // Anomaly table: BEP 이하 activePlans
-  const anomalyPlans = activePlans.filter((p) => {
+  // BEP 이하 activePlans
+  const allBepBelow = activePlans.filter((p) => {
     const nb = normBrand(p.brand);
     const bep = settings?.brands[nb]?.bep_roas ?? 0;
     const matchesBrand =
       selectedBrand === 'all' || nb === selectedBrand;
     return matchesBrand && p.stats_7d.roas_pct < bep;
   });
+
+  // ① 입찰가 조정 대상: 클릭O + 전환O (ROAS > 0이지만 BEP 미달)
+  const bidAdjustPlans = allBepBelow.filter(
+    (p) => p.stats_7d.roas_pct > 0
+  );
+
+  // ② 소재교체 검토: 클릭O + 전환X (ROAS 0%)
+  const creativeReviewPlans = allBepBelow.filter(
+    (p) => p.stats_7d.roas_pct === 0 && p.stats_7d.clk_cnt > 0
+  );
 
   return (
     <div className="space-y-6">
@@ -183,12 +193,12 @@ export default function TodayStatus() {
         })}
       </div>
 
-      {/* Anomaly table */}
+      {/* 입찰가 조정 대상 */}
       <Card>
-        <CardTitle>이상 그룹 (BEP 미달)</CardTitle>
-        {anomalyPlans.length === 0 ? (
+        <CardTitle>🚨 입찰가 조정 필요 (BEP 미달 + 전환 있음)</CardTitle>
+        {bidAdjustPlans.length === 0 ? (
           <p className="text-gray-500 text-sm text-center py-8">
-            BEP 미달 그룹이 없습니다.
+            입찰가 조정 대상 그룹이 없습니다.
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -198,12 +208,13 @@ export default function TodayStatus() {
                   <th className="pb-2 pr-4 font-medium">광고그룹명</th>
                   <th className="pb-2 pr-4 font-medium">브랜드</th>
                   <th className="pb-2 pr-4 font-medium text-right">ROAS%</th>
+                  <th className="pb-2 pr-4 font-medium text-right">클릭</th>
                   <th className="pb-2 pr-4 font-medium">조정방향</th>
                   <th className="pb-2 font-medium text-right">제안입찰가</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2a2d3e]">
-                {anomalyPlans.map((plan, i) => (
+                {bidAdjustPlans.map((plan, i) => (
                   <tr key={i} className="hover:bg-[#1e2130] transition-colors">
                     <td className="py-2 pr-4 text-white max-w-[200px] truncate">
                       {plan.adgroup_name}
@@ -215,6 +226,9 @@ export default function TodayStatus() {
                       <span className="text-red-400 font-semibold">
                         {plan.stats_7d.roas_pct}%
                       </span>
+                    </td>
+                    <td className="py-2 pr-4 text-right text-gray-300">
+                      {plan.stats_7d.clk_cnt}
                     </td>
                     <td className="py-2 pr-4">
                       <Badge
@@ -233,6 +247,50 @@ export default function TodayStatus() {
           </div>
         )}
       </Card>
+
+      {/* 소재교체 검토 대상 */}
+      {creativeReviewPlans.length > 0 && (
+        <Card>
+          <CardTitle>⚠️ 소재교체 검토 (클릭O / 전환X)</CardTitle>
+          <p className="text-gray-500 text-xs mb-3">
+            클릭은 발생하지만 구매전환이 없는 그룹입니다. 입찰가보다 소재(노출명) 교체를 검토해 보세요.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[#2a2d3e] text-gray-400 text-left">
+                  <th className="pb-2 pr-4 font-medium">광고그룹명</th>
+                  <th className="pb-2 pr-4 font-medium">브랜드</th>
+                  <th className="pb-2 pr-4 font-medium text-right">7일 클릭</th>
+                  <th className="pb-2 pr-4 font-medium text-right">광고비</th>
+                  <th className="pb-2 font-medium text-right">현재 입찰가</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#2a2d3e]">
+                {creativeReviewPlans.map((plan, i) => (
+                  <tr key={i} className="hover:bg-[#1e2130] transition-colors">
+                    <td className="py-2 pr-4 text-white max-w-[200px] truncate">
+                      {plan.adgroup_name}
+                    </td>
+                    <td className="py-2 pr-4 text-gray-300">
+                      {plan.brand_name}
+                    </td>
+                    <td className="py-2 pr-4 text-right text-yellow-400">
+                      {plan.stats_7d.clk_cnt}회
+                    </td>
+                    <td className="py-2 pr-4 text-right text-gray-300">
+                      {plan.stats_7d.sales_amt.toLocaleString()}원
+                    </td>
+                    <td className="py-2 text-right text-gray-300">
+                      {plan.current_bid.toLocaleString()}원
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
