@@ -62,8 +62,6 @@ export default function BidAdjustment() {
   useEffect(() => {
     loadData();
     pollQueue();
-    const interval = setInterval(pollQueue, 5000);
-    return () => clearInterval(interval);
   }, [loadData, pollQueue]);
 
   const filteredPlans = (
