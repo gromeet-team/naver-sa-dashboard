@@ -1,0 +1,1490 @@
+{
+  "created_at": "2026-04-06T09:40:53.926459",
+  "approved": false,
+  "plans": [
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-01-000000010182332",
+      "campaign_name": "제빙기_파워링크",
+      "adgroup_id": "grp-a001-01-000000060125254",
+      "adgroup_name": "제빙기",
+      "current_bid": 90,
+      "new_bid": 80,
+      "scenario": "C",
+      "action": "DOWN",
+      "reason": "ROAS 88% (목표×0.7 미만) → -15% 하향",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 272,
+        "sales_amt": 679860,
+        "conv_amt": 2593000,
+        "purchase_conv_amt": 598000,
+        "purchase_ccnt": 2,
+        "cpc": 2499,
+        "avg_rnk": 2.3,
+        "roas_pct": 88
+      },
+      "stats_1d": {
+        "avg_rnk": 1.4
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010182488",
+      "campaign_name": "쇼핑_제빙기_MO",
+      "adgroup_id": "grp-a001-02-000000060126490",
+      "adgroup_name": "1.제빙기/제빙기추천",
+      "current_bid": 1860,
+      "new_bid": 1460,
+      "scenario": "C",
+      "action": "DOWN",
+      "reason": "ROAS 115% (목표×0.7 미만) → -15% 하향",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 134,
+        "sales_amt": 259426,
+        "conv_amt": 1496000,
+        "purchase_conv_amt": 299000,
+        "purchase_ccnt": 1,
+        "cpc": 1936,
+        "avg_rnk": 1.8,
+        "roas_pct": 115
+      },
+      "stats_1d": {
+        "avg_rnk": 2.7
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010182488",
+      "campaign_name": "쇼핑_제빙기_MO",
+      "adgroup_id": "grp-a001-02-000000060126542",
+      "adgroup_name": "2.가정용제빙기",
+      "current_bid": 1700,
+      "new_bid": 1450,
+      "scenario": "C",
+      "action": "DOWN",
+      "reason": "ROAS 0% (목표×0.7 미만) → -15% 하향",
+      "dow_weight": 1.0472,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 43,
+        "sales_amt": 73644,
+        "conv_amt": 798000,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 1713,
+        "avg_rnk": 3.3,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 3.6
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010182488",
+      "campaign_name": "쇼핑_제빙기_MO",
+      "adgroup_id": "grp-a001-02-000000060126543",
+      "adgroup_name": "3.미니제빙기",
+      "current_bid": 1700,
+      "new_bid": 1700,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "ROAS 472% 높지만 2.2위 → 3위 이내 동결 (2026-03-31 벤 확정)",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 68,
+        "sales_amt": 126693,
+        "conv_amt": 2593050,
+        "purchase_conv_amt": 598050,
+        "purchase_ccnt": 2,
+        "cpc": 1863,
+        "avg_rnk": 2.2,
+        "roas_pct": 472
+      },
+      "stats_1d": {
+        "avg_rnk": 2.3
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010182488",
+      "campaign_name": "쇼핑_제빙기_MO",
+      "adgroup_id": "grp-a001-02-000000060126544",
+      "adgroup_name": "4.업소용제빙기",
+      "current_bid": 450,
+      "new_bid": 450,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 1회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 1,
+        "sales_amt": 55,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 55,
+        "avg_rnk": 2.0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 2.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010182488",
+      "campaign_name": "쇼핑_제빙기_MO",
+      "adgroup_id": "grp-a001-02-000000060126545",
+      "adgroup_name": "5.얼음제빙기",
+      "current_bid": 2000,
+      "new_bid": 2000,
+      "scenario": "D",
+      "action": "OFF",
+      "reason": "클릭 108회, 전환 0 → 일시정지 권고",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 108,
+        "sales_amt": 127491,
+        "conv_amt": 399000,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 1180,
+        "avg_rnk": 1.5,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.6
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010182488",
+      "campaign_name": "쇼핑_제빙기_MO",
+      "adgroup_id": "grp-a001-02-000000060126546",
+      "adgroup_name": "6.캠핑용제빙기/캠핑용얼음제빙기",
+      "current_bid": 2000,
+      "new_bid": 2000,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 13회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 13,
+        "sales_amt": 23270,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 1790,
+        "avg_rnk": 1.4,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.4
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010182488",
+      "campaign_name": "쇼핑_제빙기_MO",
+      "adgroup_id": "grp-a001-02-000000060126548",
+      "adgroup_name": "7.사무실제빙기",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010182488",
+      "campaign_name": "쇼핑_제빙기_MO",
+      "adgroup_id": "grp-a001-02-000000060126549",
+      "adgroup_name": "8.카페제빙기",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010182488",
+      "campaign_name": "쇼핑_제빙기_MO",
+      "adgroup_id": "grp-a001-02-000000064297334",
+      "adgroup_name": "9. 저소음제빙기",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010423251",
+      "campaign_name": "쇼핑_제빙기_PC",
+      "adgroup_id": "grp-a001-02-000000064305083",
+      "adgroup_name": "1.제빙기/제빙기추천",
+      "current_bid": 1900,
+      "new_bid": 1900,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 29회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 29,
+        "sales_amt": 57654,
+        "conv_amt": 7326000,
+        "purchase_conv_amt": 942000,
+        "purchase_ccnt": 2,
+        "cpc": 1988,
+        "avg_rnk": 1.8,
+        "roas_pct": 1634
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010423251",
+      "campaign_name": "쇼핑_제빙기_PC",
+      "adgroup_id": "grp-a001-02-000000064305084",
+      "adgroup_name": "2.가정용제빙기",
+      "current_bid": 1200,
+      "new_bid": 1200,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "ROAS 954% 높지만 1.9위 → 3위 이내 동결 (2026-03-31 벤 확정)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 39,
+        "sales_amt": 62663,
+        "conv_amt": 1795000,
+        "purchase_conv_amt": 598000,
+        "purchase_ccnt": 2,
+        "cpc": 1607,
+        "avg_rnk": 1.9,
+        "roas_pct": 954
+      },
+      "stats_1d": {
+        "avg_rnk": 1.8
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010423251",
+      "campaign_name": "쇼핑_제빙기_PC",
+      "adgroup_id": "grp-a001-02-000000064305086",
+      "adgroup_name": "3.미니제빙기",
+      "current_bid": 2300,
+      "new_bid": 2300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 26회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 26,
+        "sales_amt": 61686,
+        "conv_amt": 399000,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 2373,
+        "avg_rnk": 1.5,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.3
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010423251",
+      "campaign_name": "쇼핑_제빙기_PC",
+      "adgroup_id": "grp-a001-02-000000064305087",
+      "adgroup_name": "4.업소용제빙기",
+      "current_bid": 600,
+      "new_bid": 600,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 0회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 1.0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010423251",
+      "campaign_name": "쇼핑_제빙기_PC",
+      "adgroup_id": "grp-a001-02-000000064305090",
+      "adgroup_name": "5.얼음제빙기",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010423251",
+      "campaign_name": "쇼핑_제빙기_PC",
+      "adgroup_id": "grp-a001-02-000000064305093",
+      "adgroup_name": "6.캠핑용제빙기/캠핑용얼음제빙",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010423251",
+      "campaign_name": "쇼핑_제빙기_PC",
+      "adgroup_id": "grp-a001-02-000000064305094",
+      "adgroup_name": "7.사무실제빙기",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010423251",
+      "campaign_name": "쇼핑_제빙기_PC",
+      "adgroup_id": "grp-a001-02-000000064305095",
+      "adgroup_name": "8.카페제빙기",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "kucham",
+      "brand_name": "쿠참",
+      "campaign_id": "cmp-a001-02-000000010423251",
+      "campaign_name": "쇼핑_제빙기_PC",
+      "adgroup_id": "grp-a001-02-000000064305097",
+      "adgroup_name": "9. 저소음제빙기",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064246366",
+      "adgroup_name": "UVID_톤업_베이지_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 1회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 1,
+        "sales_amt": 231,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 231,
+        "avg_rnk": 6.6,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 5.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064250805",
+      "adgroup_name": "UVID_백탁_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 0회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 8.0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 6.7
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064298021",
+      "adgroup_name": "UVID_민감_MO",
+      "current_bid": 200,
+      "new_bid": 200,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064298122",
+      "adgroup_name": "UVID_무향_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 0회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 5.7,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010423090",
+      "campaign_name": "유비드_톤업_PC",
+      "adgroup_id": "grp-a001-02-000000064300830",
+      "adgroup_name": "UVID_덧바름_PC",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010423090",
+      "campaign_name": "유비드_톤업_PC",
+      "adgroup_id": "grp-a001-02-000000064300833",
+      "adgroup_name": "UVID_톤업_PC",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010423090",
+      "campaign_name": "유비드_톤업_PC",
+      "adgroup_id": "grp-a001-02-000000064300835",
+      "adgroup_name": "UVID_메인_PC",
+      "current_bid": 50,
+      "new_bid": 50,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064455240",
+      "adgroup_name": "UVID_USP_덧바름_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 0회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 1.0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064455245",
+      "adgroup_name": "UVID_USP_휴대용_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 2회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 2,
+        "sales_amt": 646,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 323,
+        "avg_rnk": 3.6,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 5.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064455246",
+      "adgroup_name": "UVID_USP_낱개_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 0회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 2.9,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064455249",
+      "adgroup_name": "UVID_톤업_SPF_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 26회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 26,
+        "sales_amt": 1430,
+        "conv_amt": 149500,
+        "purchase_conv_amt": 149500,
+        "purchase_ccnt": 5,
+        "cpc": 55,
+        "avg_rnk": 3.6,
+        "roas_pct": 10455
+      },
+      "stats_1d": {
+        "avg_rnk": 3.5
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064455250",
+      "adgroup_name": "UVID_톤업_차단_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 0회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 3.0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064455252",
+      "adgroup_name": "UVID_골프_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 0회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 7.3,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064455255",
+      "adgroup_name": "UVID_아웃도어_MO",
+      "current_bid": 400,
+      "new_bid": 400,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "ROAS 584% 높지만 1.6위 → 3위 이내 동결 (2026-03-31 벤 확정)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 42,
+        "sales_amt": 13486,
+        "conv_amt": 78800,
+        "purchase_conv_amt": 78800,
+        "purchase_ccnt": 3,
+        "cpc": 321,
+        "avg_rnk": 1.6,
+        "roas_pct": 584
+      },
+      "stats_1d": {
+        "avg_rnk": 2.0
+      }
+    },
+    {
+      "brand": "betterworld",
+      "brand_name": "더나은세상",
+      "campaign_id": "cmp-a001-02-000000010419324",
+      "campaign_name": "유비드_톤업_MO",
+      "adgroup_id": "grp-a001-02-000000064455258",
+      "adgroup_name": "UVID_외출_MO",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 0회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 2.3,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 5.0
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-01-000000005936343",
+      "campaign_name": "01.파워_온수매트",
+      "adgroup_id": "grp-a001-01-000000029915697",
+      "adgroup_name": "01.파워_온수매트_서브",
+      "current_bid": 70,
+      "new_bid": 70,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 19회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 19,
+        "sales_amt": 17266,
+        "conv_amt": 1336000,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 909,
+        "avg_rnk": 1.4,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.3
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-01-000000005936343",
+      "campaign_name": "01.파워_온수매트",
+      "adgroup_id": "grp-a001-01-000000029915699",
+      "adgroup_name": "01.파워_온수매트_메인",
+      "current_bid": 70,
+      "new_bid": 70,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "ROAS 275% (목표×0.7~0.9) → -7% 소폭 하향 (조정 전후 동일 → 동결)",
+      "dow_weight": 1.1267,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 127,
+        "sales_amt": 264994,
+        "conv_amt": 1734020,
+        "purchase_conv_amt": 728020,
+        "purchase_ccnt": 3,
+        "cpc": 2087,
+        "avg_rnk": 2.0,
+        "roas_pct": 275
+      },
+      "stats_1d": {
+        "avg_rnk": 2.0
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-01-000000005936343",
+      "campaign_name": "01.파워_온수매트",
+      "adgroup_id": "grp-a001-01-000000029915701",
+      "adgroup_name": "01.파워_온수매트_거실,바닥,카페트",
+      "current_bid": 70,
+      "new_bid": 70,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 26회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.3,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 26,
+        "sales_amt": 19117,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 735,
+        "avg_rnk": 1.8,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.8
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-01-000000005936343",
+      "campaign_name": "01.파워_온수매트",
+      "adgroup_id": "grp-a001-01-000000030188974",
+      "adgroup_name": "01.파워_온수매트_1인",
+      "current_bid": 70,
+      "new_bid": 70,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 3회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 3,
+        "sales_amt": 4741,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 1580,
+        "avg_rnk": 1.7,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.7
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-01-000000005936343",
+      "campaign_name": "01.파워_온수매트",
+      "adgroup_id": "grp-a001-01-000000030189011",
+      "adgroup_name": "01.파워_온수매트_2인",
+      "current_bid": 70,
+      "new_bid": 70,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 6회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 6,
+        "sales_amt": 4132,
+        "conv_amt": 349000,
+        "purchase_conv_amt": 349000,
+        "purchase_ccnt": 1,
+        "cpc": 689,
+        "avg_rnk": 1.7,
+        "roas_pct": 8446
+      },
+      "stats_1d": {
+        "avg_rnk": 1.6
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-01-000000005936343",
+      "campaign_name": "01.파워_온수매트",
+      "adgroup_id": "grp-a001-01-000000030189043",
+      "adgroup_name": "01.파워_온수매트_타상호",
+      "current_bid": 500,
+      "new_bid": 500,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 20회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 20,
+        "sales_amt": 7267,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 363,
+        "avg_rnk": 4.3,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 3.1
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-01-000000005936343",
+      "campaign_name": "01.파워_온수매트",
+      "adgroup_id": "grp-a001-01-000000030194187",
+      "adgroup_name": "01.파워_온수매트_침대,매트리스",
+      "current_bid": 70,
+      "new_bid": 70,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 10회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 10,
+        "sales_amt": 8842,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 884,
+        "avg_rnk": 2.8,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 2.8
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-01-000000005936343",
+      "campaign_name": "01.파워_온수매트",
+      "adgroup_id": "grp-a001-01-000000030225879",
+      "adgroup_name": "01.파워_온수매트_자상호",
+      "current_bid": 70,
+      "new_bid": 70,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "ROAS 23666% 높지만 1.7위 → 3위 이내 동결 (2026-03-31 벤 확정)",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 37,
+        "sales_amt": 7318,
+        "conv_amt": 3326900,
+        "purchase_conv_amt": 1731900,
+        "purchase_ccnt": 5,
+        "cpc": 198,
+        "avg_rnk": 1.7,
+        "roas_pct": 23666
+      },
+      "stats_1d": {
+        "avg_rnk": 1.7
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000004449467",
+      "campaign_name": "01.쇼핑브랜드_온수매트",
+      "adgroup_id": "grp-a001-02-000000022725134",
+      "adgroup_name": "온수매트",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 3회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 3,
+        "sales_amt": 1023,
+        "conv_amt": 239000,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 341,
+        "avg_rnk": 1.0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.0
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000004449467",
+      "campaign_name": "01.쇼핑브랜드_온수매트",
+      "adgroup_id": "grp-a001-02-000000030224973",
+      "adgroup_name": "01.쇼핑브랜드_온수매트_자사키워드",
+      "current_bid": 350,
+      "new_bid": 350,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "통계 없음 (데이터 수집 중)",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 0.0
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000004449467",
+      "campaign_name": "01.쇼핑브랜드_온수매트",
+      "adgroup_id": "grp-a001-02-000000030224974",
+      "adgroup_name": "01.쇼핑브랜드_온수매트_타사키워드",
+      "current_bid": 400,
+      "new_bid": 400,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 0회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 0,
+        "sales_amt": 0,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 0,
+        "avg_rnk": 1.0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.0
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000004449467",
+      "campaign_name": "01.쇼핑브랜드_온수매트",
+      "adgroup_id": "grp-a001-02-000000030224976",
+      "adgroup_name": "01.쇼핑브랜드_온수매트_일반키워드",
+      "current_bid": 300,
+      "new_bid": 300,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 16회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 16,
+        "sales_amt": 29094,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 1818,
+        "avg_rnk": 1.0,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.0
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000006776299",
+      "campaign_name": "쇼검_온수매트 침대형",
+      "adgroup_id": "grp-a001-02-000000034901676",
+      "adgroup_name": "온수매트",
+      "current_bid": 1600,
+      "new_bid": 1600,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "ROAS 664% 높지만 2.0위 → 3위 이내 동결 (2026-03-31 벤 확정)",
+      "dow_weight": 1.3,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 373,
+        "sales_amt": 858138,
+        "conv_amt": 9843900,
+        "purchase_conv_amt": 5697900,
+        "purchase_ccnt": 20,
+        "cpc": 2301,
+        "avg_rnk": 2.0,
+        "roas_pct": 664
+      },
+      "stats_1d": {
+        "avg_rnk": 1.8
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000006776299",
+      "campaign_name": "쇼검_온수매트 침대형",
+      "adgroup_id": "grp-a001-02-000000034901773",
+      "adgroup_name": "온수매트싱글",
+      "current_bid": 1800,
+      "new_bid": 1800,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 11회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 11,
+        "sales_amt": 18738,
+        "conv_amt": 239000,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 1703,
+        "avg_rnk": 3.3,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 3.4
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000006776299",
+      "campaign_name": "쇼검_온수매트 침대형",
+      "adgroup_id": "grp-a001-02-000000034901779",
+      "adgroup_name": "온수매트추천",
+      "current_bid": 2100,
+      "new_bid": 2100,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 12회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 12,
+        "sales_amt": 20946,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 1746,
+        "avg_rnk": 2.4,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 2.3
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000006776299",
+      "campaign_name": "쇼검_온수매트 침대형",
+      "adgroup_id": "grp-a001-02-000000034901790",
+      "adgroup_name": "1인용온수매트",
+      "current_bid": 680,
+      "new_bid": 680,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 9회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 0.8057,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 9,
+        "sales_amt": 13404,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 1489,
+        "avg_rnk": 2.5,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 2.2
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000006776299",
+      "campaign_name": "쇼검_온수매트 침대형",
+      "adgroup_id": "grp-a001-02-000000034901794",
+      "adgroup_name": "싱글/슈퍼싱글/퀸",
+      "current_bid": 2170,
+      "new_bid": 2170,
+      "scenario": "B",
+      "action": "HOLD",
+      "reason": "ROAS 745% 높지만 2.6위 → 3위 이내 동결 (2026-03-31 벤 확정)",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 116,
+        "sales_amt": 252507,
+        "conv_amt": 5523700,
+        "purchase_conv_amt": 1882000,
+        "purchase_ccnt": 8,
+        "cpc": 2177,
+        "avg_rnk": 2.6,
+        "roas_pct": 745
+      },
+      "stats_1d": {
+        "avg_rnk": 2.6
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000006776299",
+      "campaign_name": "쇼검_온수매트 침대형",
+      "adgroup_id": "grp-a001-02-000000053176558",
+      "adgroup_name": "쇼파용 온수매트",
+      "current_bid": 680,
+      "new_bid": 680,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 9회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 0.7,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 9,
+        "sales_amt": 8632,
+        "conv_amt": 219000,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 959,
+        "avg_rnk": 1.5,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 1.4
+      }
+    },
+    {
+      "brand": "foremong",
+      "brand_name": "포레몽",
+      "campaign_id": "cmp-a001-02-000000006776299",
+      "campaign_name": "쇼검_온수매트 침대형",
+      "adgroup_id": "grp-a001-02-000000053176559",
+      "adgroup_name": "전자파없는/무소움",
+      "current_bid": 680,
+      "new_bid": 680,
+      "scenario": "B",
+      "action": "SKIP",
+      "reason": "클릭 6회 미만 (30회 임계값) → 데이터 부족",
+      "dow_weight": 1.0,
+      "approved": false,
+      "stats_7d": {
+        "clk_cnt": 6,
+        "sales_amt": 9153,
+        "conv_amt": 0,
+        "purchase_conv_amt": 0,
+        "purchase_ccnt": 0,
+        "cpc": 1526,
+        "avg_rnk": 2.7,
+        "roas_pct": 0
+      },
+      "stats_1d": {
+        "avg_rnk": 2.5
+      }
+    }
+  ]
+}
