@@ -1,4 +1,6 @@
 'use client';
+const BRAND_MAP: Record<string, string> = { kucham: "kucham", uvid: "uvid", betterworld: "uvid", meariset: "meariset", foremong: "foremong" };
+function normBrand(b: string) { return BRAND_MAP[b] ?? b; }
 
 import { useEffect, useState } from 'react';
 import { fetchKeywordLearning, fetchKeywordExpansion } from '@/lib/data';
@@ -42,12 +44,12 @@ export default function Keywords() {
   const filteredLearning =
     selectedBrand === 'all'
       ? learning
-      : learning.filter((k) => k.brand === selectedBrand);
+      : learning.filter((k) => normBrand(k.brand) === selectedBrand);
 
   const filteredExpansion =
     selectedBrand === 'all'
       ? expansion
-      : expansion.filter((k) => k.brand === selectedBrand);
+      : expansion.filter((k) => normBrand(k.brand) === selectedBrand);
 
   function handleBulkApprove() {
     console.log(

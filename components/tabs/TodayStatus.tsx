@@ -11,9 +11,20 @@ const BRAND_KEYS = ['kucham', 'uvid', 'meariset', 'foremong'] as const;
 const BRAND_LABELS: Record<string, string> = {
   kucham: '쿠참',
   uvid: '유비드',
+  betterworld: '유비드',
   meariset: '메아리셋',
   foremong: '포레몽',
 };
+
+// API 데이터의 brand → 프론트엔드 brand key 매핑
+const BRAND_MAP: Record<string, string> = {
+  kucham: 'kucham',
+  uvid: 'uvid',
+  betterworld: 'uvid',  // 더나은세상 = 유비드
+  meariset: 'meariset',
+  foremong: 'foremong',
+};
+function normBrand(b: string) { return BRAND_MAP[b] ?? b; }
 
 function roasVariant(
   roas: number,
@@ -60,7 +71,7 @@ export default function TodayStatus() {
   const latestRoasByBrand: Record<string, number | null> = {};
   BRAND_KEYS.forEach((brand) => {
     const brandPlans = activePlans.filter(
-      (p) => p.brand === brand && p.stats_7d.clk_cnt > 0
+      (p) => normBrand(p.brand) === brand && p.stats_7d.clk_cnt > 0
     );
     if (brandPlans.length === 0) {
       latestRoasByBrand[brand] = null;
@@ -87,7 +98,7 @@ export default function TodayStatus() {
   BRAND_KEYS.forEach((brand) => {
     const bep = settings?.brands[brand]?.bep_roas ?? 0;
     bepBelowCountByBrand[brand] = activePlans.filter(
-      (p) => p.brand === brand && p.stats_7d.roas_pct < bep
+      (p) => normBrand(p.brand) === brand && p.stats_7d.roas_pct < bep
     ).length;
   });
 
@@ -98,9 +109,10 @@ export default function TodayStatus() {
 
   // Anomaly table: BEP 이하 activePlans
   const anomalyPlans = activePlans.filter((p) => {
-    const bep = settings?.brands[p.brand]?.bep_roas ?? 0;
+    const nb = normBrand(p.brand);
+    const bep = settings?.brands[nb]?.bep_roas ?? 0;
     const matchesBrand =
-      selectedBrand === 'all' || p.brand === selectedBrand;
+      selectedBrand === 'all' || nb === selectedBrand;
     return matchesBrand && p.stats_7d.roas_pct < bep;
   });
 

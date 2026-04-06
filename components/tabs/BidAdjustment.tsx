@@ -13,6 +13,11 @@ import type { Plan, HistoryRecord, QueueItem } from '@/lib/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 
+const BRAND_MAP: Record<string, string> = {
+  kucham: 'kucham', uvid: 'uvid', betterworld: 'uvid', meariset: 'meariset', foremong: 'foremong',
+};
+function normBrand(b: string) { return BRAND_MAP[b] ?? b; }
+
 function calcVerdict(
   d7Roas: number | null,
   preRoas: number
@@ -59,7 +64,7 @@ export default function BidAdjustment() {
   const filteredPlans = (
     selectedBrand === 'all'
       ? plans
-      : plans.filter((p) => p.brand === selectedBrand)
+      : plans.filter((p) => normBrand(p.brand) === selectedBrand)
   ).filter(
     (p) => !(p.stats_7d.clk_cnt === 0 && p.stats_7d.sales_amt === 0)
   );
@@ -68,7 +73,7 @@ export default function BidAdjustment() {
   const noClickPlans = (
     selectedBrand === 'all'
       ? plans
-      : plans.filter((p) => p.brand === selectedBrand)
+      : plans.filter((p) => normBrand(p.brand) === selectedBrand)
   ).filter(
     (p) => p.stats_7d.clk_cnt === 0 && p.stats_7d.sales_amt > 0
   );
@@ -76,7 +81,7 @@ export default function BidAdjustment() {
   const filteredHistory =
     selectedBrand === 'all'
       ? history
-      : history.filter((h) => h.brand === selectedBrand);
+      : history.filter((h) => normBrand(h.brand) === selectedBrand);
 
   const pendingQueue = queue.filter((q) => q.status === 'pending');
 
