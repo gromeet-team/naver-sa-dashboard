@@ -18,6 +18,10 @@ function roasVariant(
   return 'yellow';
 }
 
+function formatCampaignAdgroup(campaignName: string | undefined, adgroupName: string) {
+  return campaignName ? `${campaignName} / ${adgroupName}` : adgroupName;
+}
+
 export default function TodayStatus() {
   const { selectedBrand } = useBrandFilter();
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -268,8 +272,8 @@ export default function TodayStatus() {
               <tbody className="divide-y divide-[#2a2d3e]">
                 {bidAdjustPlans.map((plan, i) => (
                   <tr key={i} className="hover:bg-[#1e2130] transition-colors">
-                    <td className="py-2 pr-4 text-white max-w-[200px] truncate">
-                      {plan.adgroup_name}
+                    <td className="py-2 pr-4 text-white max-w-[260px] truncate">
+                      {formatCampaignAdgroup(plan.campaign_name, plan.adgroup_name)}
                     </td>
                     <td className="py-2 pr-4 text-gray-300">
                       {plan.brand_name}
@@ -324,8 +328,8 @@ export default function TodayStatus() {
               <tbody className="divide-y divide-[#2a2d3e]">
                 {creativeReviewPlans.map((plan, i) => (
                   <tr key={i} className="hover:bg-[#1e2130] transition-colors">
-                    <td className="py-2 pr-4 text-white max-w-[200px] truncate">
-                      {plan.adgroup_name}
+                    <td className="py-2 pr-4 text-white max-w-[260px] truncate">
+                      {formatCampaignAdgroup(plan.campaign_name, plan.adgroup_name)}
                     </td>
                     <td className="py-2 pr-4 text-gray-300">
                       {plan.brand_name}

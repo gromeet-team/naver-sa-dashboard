@@ -30,6 +30,10 @@ function fmtDate(iso: string) {
   return iso.replace('T', ' ').slice(0, 16);
 }
 
+function formatCampaignAdgroup(campaignName: string | undefined, adgroupName: string) {
+  return campaignName ? `${campaignName} / ${adgroupName}` : adgroupName;
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 const TUNNEL_HEADERS = {
   'Content-Type': 'application/json',
@@ -40,7 +44,7 @@ const TUNNEL_HEADERS = {
 function planToSlackText(plans: Plan[]): string {
   const lines = plans.map((p) => {
     const dir = p.action === 'UP' ? '↑' : p.action === 'DOWN' ? '↓' : '-';
-    return `• ${p.brand_name} | ${p.adgroup_name} | ${p.current_bid.toLocaleString()}원 → ${p.new_bid.toLocaleString()}원 ${dir} | ROAS ${p.stats_7d.roas_pct}% | ${p.reason}`;
+    return `• ${p.brand_name} | ${formatCampaignAdgroup(p.campaign_name, p.adgroup_name)} | ${p.current_bid.toLocaleString()}원 → ${p.new_bid.toLocaleString()}원 ${dir} | ROAS ${p.stats_7d.roas_pct}% | ${p.reason}`;
   });
   return `[입찰가 조정 요청]\n${lines.join('\n')}`;
 }
@@ -197,14 +201,14 @@ export default function BidAdjustment() {
 
       setRollbackMessage({
         type: 'success',
-        text: `${rec.adgroup_name} 복원 요청 완료 (${rec.prev_bid.toLocaleString()}원)`,
+        text: `${formatCampaignAdgroup(rec.campaign_name, rec.adgroup_name)} 복원 요청 완료 (${rec.prev_bid.toLocaleString()}원)`,
       });
       await loadData();
     } catch (e) {
       console.error('Rollback failed:', e);
       setRollbackMessage({
         type: 'error',
-        text: `${rec.adgroup_name} 복원 실패, API 상태 확인 필요`,
+        text: `${formatCampaignAdgroup(rec.campaign_name, rec.adgroup_name)} 복원 실패, API 상태 확인 필요`,
       });
     } finally {
       setRollbackLoadingKey(null);
@@ -294,8 +298,8 @@ export default function BidAdjustment() {
                   return (
                   <tr key={i} className="hover:bg-[#1e2130] transition-colors">
                     <td className="py-2 pr-3 text-gray-300">{plan.brand_name}</td>
-                    <td className="py-2 pr-3 text-white max-w-[160px] truncate">
-                      {plan.adgroup_name}
+                    <td className="py-2 pr-3 text-white max-w-[220px] truncate">
+                      {formatCampaignAdgroup(plan.campaign_name, plan.adgroup_name)}
                     </td>
                     <td className="py-2 pr-3 text-right text-gray-300">
                       {plan.current_bid.toLocaleString()}
@@ -367,8 +371,8 @@ export default function BidAdjustment() {
                   return (
                     <tr key={i} className="hover:bg-[#1e2130] transition-colors">
                       <td className="py-2 pr-3 text-gray-300">{plan.brand_name}</td>
-                      <td className="py-2 pr-3 text-white max-w-[140px] truncate">
-                        {plan.adgroup_name}
+                      <td className="py-2 pr-3 text-white max-w-[220px] truncate">
+                        {formatCampaignAdgroup(plan.campaign_name, plan.adgroup_name)}
                       </td>
                       <td className="py-2 pr-3 text-gray-400 text-xs max-w-[160px] truncate">
                         {creativeName}
@@ -426,8 +430,8 @@ export default function BidAdjustment() {
                         {fmtDate(rec.executed_at)}
                       </td>
                       <td className="py-2 pr-3 text-gray-300">{rec.brand_name}</td>
-                      <td className="py-2 pr-3 text-white max-w-[140px] truncate">
-                        {rec.adgroup_name}
+                      <td className="py-2 pr-3 text-white max-w-[220px] truncate">
+                        {formatCampaignAdgroup(rec.campaign_name, rec.adgroup_name)}
                       </td>
                       <td className="py-2 pr-3 text-right whitespace-nowrap text-gray-300">
                         {rec.prev_bid.toLocaleString()}→{rec.new_bid.toLocaleString()}
@@ -519,7 +523,7 @@ export default function BidAdjustment() {
                       <tr key={i} className="hover:bg-[#1e2130] transition-colors">
                         <td className="py-2 pr-3 text-gray-400 whitespace-nowrap">{item.changed_at}</td>
                         <td className="py-2 pr-3 text-gray-300">{item.brand}</td>
-                        <td className="py-2 pr-3 text-white max-w-[120px] truncate">{item.adgroup}</td>
+                        <td className="py-2 pr-3 text-white max-w-[220px] truncate">{formatCampaignAdgroup(item.campaign, item.adgroup)}</td>
                         <td className="py-2 pr-3 text-gray-400 text-xs max-w-[140px] truncate">{item.before}</td>
                         <td className="py-2 pr-3 text-blue-300 text-xs max-w-[140px] truncate">{item.after}</td>
                         <td className="py-2 pr-3 text-right text-gray-300">
