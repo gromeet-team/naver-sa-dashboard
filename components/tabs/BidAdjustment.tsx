@@ -31,6 +31,10 @@ function fmtDate(iso: string) {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
+const TUNNEL_HEADERS = {
+  'Content-Type': 'application/json',
+  'bypass-tunnel-reminder': 'true',
+};
 
 /** 슬랙 붙여넣기용 텍스트 생성 */
 function planToSlackText(plans: Plan[]): string {
@@ -167,13 +171,19 @@ export default function BidAdjustment() {
     setRollbackLoadingKey(key);
     setRollbackMessage(null);
 
+    if (!API_URL) {
+      setRollbackMessage({
+        type: 'error',
+        text: '복원 실패, NEXT_PUBLIC_API_URL 이 비어 있습니다.',
+      });
+      setRollbackLoadingKey(null);
+      return;
+    }
+
     try {
       const res = await fetch(`${API_URL}/api/rollback`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'bypass-tunnel-reminder': 'true',
-        },
+        headers: TUNNEL_HEADERS,
         body: JSON.stringify({
           brand: rec.brand,
           adgroup_id: rec.adgroup_id,
@@ -189,11 +199,12 @@ export default function BidAdjustment() {
         type: 'success',
         text: `${rec.adgroup_name} 복원 요청 완료 (${rec.prev_bid.toLocaleString()}원)`,
       });
+      await loadData();
     } catch (e) {
       console.error('Rollback failed:', e);
       setRollbackMessage({
         type: 'error',
-        text: `${rec.adgroup_name} 복원 실패 — API 상태 확인 필요`,
+        text: `${rec.adgroup_name} 복원 실패, API 상태 확인 필요`,
       });
     } finally {
       setRollbackLoadingKey(null);
@@ -328,7 +339,7 @@ export default function BidAdjustment() {
         <Card>
           <CardTitle>⚠️ 노출O / 클릭X 그룹 (소재교체 검토 필요)</CardTitle>
           <p className="text-gray-500 text-xs mb-3">
-            아래 광고비는 7일 기준 집행액입니다. 클릭은 발생했지만 전환이 없어 소재/노출명 점검 우선 대상입니다.
+            아래 광고비는 7일 기준 집행액입니다. 클릭은 없고 노출만 발생한 그룹이라 소재/노출명 점검 우선 대상입니다.
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
