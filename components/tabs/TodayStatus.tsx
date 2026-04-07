@@ -241,7 +241,12 @@ export default function TodayStatus() {
 
       {/* 입찰가 조정 대상 */}
       <Card>
-        <CardTitle>🚨 입찰가 조정 필요 (BEP 미달 + 전환 있음)</CardTitle>
+        <div className="mb-3">
+          <CardTitle>🚨 입찰가 조정 필요 (BEP 미달 + 전환 있음)</CardTitle>
+          <p className="text-xs text-gray-500 mt-1">
+            순위 반영 기준, 3위 밖 저ROAS는 3위 안 테스트 우선, 3위 이내 저ROAS는 동결 또는 소폭 조정 우선
+          </p>
+        </div>
         {bidAdjustPlans.length === 0 ? (
           <p className="text-gray-500 text-sm text-center py-8">
             입찰가 조정 대상 그룹이 없습니다.
@@ -255,6 +260,7 @@ export default function TodayStatus() {
                   <th className="pb-2 pr-4 font-medium">브랜드</th>
                   <th className="pb-2 pr-4 font-medium text-right">ROAS%</th>
                   <th className="pb-2 pr-4 font-medium text-right">클릭</th>
+                  <th className="pb-2 pr-4 font-medium text-right">평균순위</th>
                   <th className="pb-2 pr-4 font-medium">조정방향</th>
                   <th className="pb-2 font-medium text-right">제안입찰가</th>
                 </tr>
@@ -275,6 +281,9 @@ export default function TodayStatus() {
                     </td>
                     <td className="py-2 pr-4 text-right text-gray-300">
                       {plan.stats_7d.clk_cnt}
+                    </td>
+                    <td className="py-2 pr-4 text-right text-gray-300">
+                      {plan.stats_7d.avg_rnk ? plan.stats_7d.avg_rnk.toFixed(1) : '-'}
                     </td>
                     <td className="py-2 pr-4">
                       <Badge

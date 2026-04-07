@@ -41,6 +41,51 @@ function planToSlackText(plans: Plan[]): string {
   return `[입찰가 조정 요청]\n${lines.join('\n')}`;
 }
 
+function getRankAwareRecommendation(plan: Plan) {
+  const roas = plan.stats_7d.roas_pct ?? 0;
+  const rank = plan.stats_7d.avg_rnk ?? plan.stats_1d?.avg_rnk ?? null;
+  const clicks = plan.stats_7d.clk_cnt ?? 0;
+  const purchaseCount = plan.stats_7d.purchase_ccnt ?? 0;
+
+  if (rank !== null && rank > 3 && roas === 0 && clicks >= 80 && purchaseCount === 0) {
+    return {
+      label: '소재 우선',
+      variant: 'yellow' as const,
+      note: '순위 낮지만 클릭 충분, 전환 0이라 상향보다 소재/랜딩 점검 우선',
+    };
+  }
+
+  if (rank !== null && rank > 3) {
+    return {
+      label: '3위 테스트',
+      variant: 'green' as const,
+      note: 'ROAS 낮고 순위도 3위 밖이라 3위 안 진입 테스트 우선',
+    };
+  }
+
+  if (rank !== null && rank <= 3 && roas === 0 && clicks >= 80 && purchaseCount === 0) {
+    return {
+      label: '동결/소재',
+      variant: 'yellow' as const,
+      note: '3위 이내인데 전환 0, 입찰보다 소재/랜딩 개선 우선',
+    };
+  }
+
+  if (rank !== null && rank <= 3) {
+    return {
+      label: '보수조정',
+      variant: 'gray' as const,
+      note: '3위 이내 유지 구간이라 강한 하향보다 동결 또는 소폭 조정 권장',
+    };
+  }
+
+  return {
+    label: '기본판단',
+    variant: 'gray' as const,
+    note: '순위 데이터 기준 추가 판단 필요',
+  };
+}
+
 export default function BidAdjustment() {
   const { selectedBrand } = useBrandFilter();
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -193,7 +238,12 @@ export default function BidAdjustment() {
       {/* 입찰가 조정 후보 */}
       <Card>
         <div className="flex items-center justify-between mb-4">
-          <CardTitle>입찰가 조정 후보 ({filteredPlans.length}건)</CardTitle>
+          <div>
+            <CardTitle>입찰가 조정 후보 ({filteredPlans.length}건)</CardTitle>
+            <p className="text-xs text-gray-500 mt-1">
+              기준: ROAS 낮고 순위 3위 밖이면 3위 안 진입 테스트, 3위 이내면 동결 또는 소폭 조정 우선
+            </p>
+          </div>
           {filteredPlans.length > 0 && (
             <button
               onClick={handleCopy}
@@ -221,12 +271,16 @@ export default function BidAdjustment() {
                   <th className="pb-2 pr-3 font-medium text-right">현재입찰가</th>
                   <th className="pb-2 pr-3 font-medium text-right">제안입찰가</th>
                   <th className="pb-2 pr-3 font-medium text-right">ROAS%</th>
+                  <th className="pb-2 pr-3 font-medium text-right">평균순위</th>
                   <th className="pb-2 pr-3 font-medium">방향</th>
+                  <th className="pb-2 pr-3 font-medium">권장판단</th>
                   <th className="pb-2 font-medium">사유</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#2a2d3e]">
-                {filteredPlans.map((plan, i) => (
+                {filteredPlans.map((plan, i) => {
+                  const recommendation = getRankAwareRecommendation(plan);
+                  return (
                   <tr key={i} className="hover:bg-[#1e2130] transition-colors">
                     <td className="py-2 pr-3 text-gray-300">{plan.brand_name}</td>
                     <td className="py-2 pr-3 text-white max-w-[160px] truncate">
@@ -243,6 +297,9 @@ export default function BidAdjustment() {
                         {plan.stats_7d.roas_pct}%
                       </span>
                     </td>
+                    <td className="py-2 pr-3 text-right text-gray-300">
+                      {plan.stats_7d.avg_rnk ? plan.stats_7d.avg_rnk.toFixed(1) : '-'}
+                    </td>
                     <td className="py-2 pr-3">
                       <Badge
                         variant={
@@ -252,11 +309,14 @@ export default function BidAdjustment() {
                         {plan.action}
                       </Badge>
                     </td>
-                    <td className="py-2 text-gray-400 text-xs max-w-[200px] truncate">
-                      {plan.reason}
+                    <td className="py-2 pr-3">
+                      <Badge variant={recommendation.variant}>{recommendation.label}</Badge>
+                    </td>
+                    <td className="py-2 text-gray-400 text-xs max-w-[260px] truncate" title={recommendation.note}>
+                      {recommendation.note || plan.reason}
                     </td>
                   </tr>
-                ))}
+                );})}
               </tbody>
             </table>
           </div>
