@@ -2,29 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { fetchSettings, fetchPending, fetchAllHistory, fetchBudget } from '@/lib/data';
+import { BRAND_KEYS, BRAND_LABELS, normBrand } from '@/lib/config';
 import { useBrandFilter } from '@/components/BrandFilter';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import type { Settings, Plan, HistoryRecord, BudgetData } from '@/lib/types';
-
-const BRAND_KEYS = ['kucham', 'uvid', 'meariset', 'foremong'] as const;
-const BRAND_LABELS: Record<string, string> = {
-  kucham: '쿠참',
-  uvid: '유비드',
-  betterworld: '유비드',
-  meariset: '메아리셋',
-  foremong: '포레몽',
-};
-
-// API 데이터의 brand → 프론트엔드 brand key 매핑
-const BRAND_MAP: Record<string, string> = {
-  kucham: 'kucham',
-  uvid: 'uvid',
-  betterworld: 'uvid',  // 더나은세상 = 유비드
-  meariset: 'meariset',
-  foremong: 'foremong',
-};
-function normBrand(b: string) { return BRAND_MAP[b] ?? b; }
 
 function roasVariant(
   roas: number,

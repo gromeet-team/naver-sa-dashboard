@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { BRAND_LABELS } from '@/lib/config';
 import type { Brand } from '@/lib/types';
 
 interface BrandFilterContextType {
@@ -28,10 +29,10 @@ export function useBrandFilter() {
 
 const BRANDS: { value: Brand; label: string }[] = [
   { value: 'all', label: '전체' },
-  { value: 'kucham', label: '쿠참' },
-  { value: 'uvid', label: '유비드' },
-  { value: 'meariset', label: '메아리셋' },
-  { value: 'foremong', label: '포레몽' },
+  { value: 'kucham', label: BRAND_LABELS.kucham },
+  { value: 'uvid', label: BRAND_LABELS.uvid },
+  { value: 'meariset', label: BRAND_LABELS.meariset },
+  { value: 'foremong', label: BRAND_LABELS.foremong },
 ];
 
 export function BrandFilterToggle() {

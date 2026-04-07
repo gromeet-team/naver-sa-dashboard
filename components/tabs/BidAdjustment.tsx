@@ -6,15 +6,11 @@ import {
   fetchAllHistory,
   fetchCreativeHistory,
 } from '@/lib/data';
+import { normBrand } from '@/lib/config';
 import { useBrandFilter } from '@/components/BrandFilter';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import type { Plan, HistoryRecord, CreativeHistoryItem } from '@/lib/types';
-
-const BRAND_MAP: Record<string, string> = {
-  kucham: 'kucham', uvid: 'uvid', betterworld: 'uvid', meariset: 'meariset', foremong: 'foremong',
-};
-function normBrand(b: string) { return BRAND_MAP[b] ?? b; }
 
 function calcVerdict(
   d7Roas: number | null | undefined,
@@ -52,6 +48,8 @@ export default function BidAdjustment() {
   const [creativeHistory, setCreativeHistory] = useState<CreativeHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [rollbackLoadingKey, setRollbackLoadingKey] = useState<string | null>(null);
+  const [rollbackMessage, setRollbackMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const loadData = useCallback(async () => {
     const [p, h, ch] = await Promise.all([fetchPending(), fetchAllHistory(), fetchCreativeHistory()]);
@@ -120,8 +118,12 @@ export default function BidAdjustment() {
   }
 
   async function handleRollback(rec: HistoryRecord) {
+    const key = `${rec.adgroup_id}:${rec.executed_at}`;
+    setRollbackLoadingKey(key);
+    setRollbackMessage(null);
+
     try {
-      await fetch(`${API_URL}/api/rollback`, {
+      const res = await fetch(`${API_URL}/api/rollback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,8 +135,23 @@ export default function BidAdjustment() {
           target_bid: rec.prev_bid,
         }),
       });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      setRollbackMessage({
+        type: 'success',
+        text: `${rec.adgroup_name} 복원 요청 완료 (${rec.prev_bid.toLocaleString()}원)`,
+      });
     } catch (e) {
       console.error('Rollback failed:', e);
+      setRollbackMessage({
+        type: 'error',
+        text: `${rec.adgroup_name} 복원 실패 — API 상태 확인 필요`,
+      });
+    } finally {
+      setRollbackLoadingKey(null);
     }
   }
 
@@ -148,6 +165,18 @@ export default function BidAdjustment() {
 
   return (
     <div className="space-y-6">
+
+      {rollbackMessage && (
+        <div
+          className={`rounded-lg border px-4 py-3 text-sm ${
+            rollbackMessage.type === 'success'
+              ? 'border-green-800/50 bg-green-950/20 text-green-300'
+              : 'border-red-800/50 bg-red-950/20 text-red-300'
+          }`}
+        >
+          {rollbackMessage.text}
+        </div>
+      )}
 
       {/* 스킵 요약 */}
       {Object.keys(skippedByBrand).length > 0 && (
@@ -238,6 +267,9 @@ export default function BidAdjustment() {
       {noClickPlans.length > 0 && (
         <Card>
           <CardTitle>⚠️ 노출O / 클릭X 그룹 (소재교체 검토 필요)</CardTitle>
+          <p className="text-gray-500 text-xs mb-3">
+            아래 광고비는 7일 기준 집행액입니다. 클릭은 발생했지만 전환이 없어 소재/노출명 점검 우선 대상입니다.
+          </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -247,7 +279,7 @@ export default function BidAdjustment() {
                   <th className="pb-2 pr-3 font-medium">현재 소재명</th>
                   <th className="pb-2 pr-3 font-medium text-right">노출수</th>
                   <th className="pb-2 pr-3 font-medium text-right">클릭수</th>
-                  <th className="pb-2 pr-3 font-medium text-right">광고비</th>
+                  <th className="pb-2 pr-3 font-medium text-right">7일 광고비</th>
                   <th className="pb-2 font-medium text-right">ROAS%</th>
                 </tr>
               </thead>
@@ -348,9 +380,10 @@ export default function BidAdjustment() {
                       <td className="py-2">
                         <button
                           onClick={() => handleRollback(rec)}
-                          className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                          disabled={rollbackLoadingKey === `${rec.adgroup_id}:${rec.executed_at}`}
+                          className="text-xs text-gray-500 hover:text-gray-300 disabled:text-gray-700 transition-colors"
                         >
-                          복원
+                          {rollbackLoadingKey === `${rec.adgroup_id}:${rec.executed_at}` ? '복원중...' : '복원'}
                         </button>
                       </td>
                     </tr>

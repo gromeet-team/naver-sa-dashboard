@@ -1,9 +1,8 @@
 'use client';
-const BRAND_MAP: Record<string, string> = { kucham: "kucham", uvid: "uvid", betterworld: "uvid", meariset: "meariset", foremong: "foremong" };
-function normBrand(b: string) { return BRAND_MAP[b] ?? b; }
 
 import { useEffect, useState } from 'react';
 import { fetchKeywordLearning, fetchKeywordExpansion } from '@/lib/data';
+import { normBrand } from '@/lib/config';
 import { useBrandFilter } from '@/components/BrandFilter';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -79,10 +78,8 @@ export default function Keywords() {
   }
 
   function handleBulkApprove() {
-    const selected = pendingExpansion.filter((_, i) => selectedRows.has(i));
-    console.log('일괄 승인:', selected);
-    // TODO: API 연결
-    setSelectedRows(new Set());
+    // TODO: 실제 승인 API 연결 전까지 가짜 동작 금지
+    return;
   }
 
   return (
@@ -197,7 +194,9 @@ export default function Keywords() {
               {pendingExpansion.some((_, i) => selectedRows.has(i)) && (
                 <button
                   onClick={handleBulkApprove}
-                  className="text-sm bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded transition-colors"
+                  disabled
+                  title="승인 API 연결 전까지 비활성화"
+                  className="text-sm bg-[#2a2d3e] text-gray-500 px-4 py-1.5 rounded cursor-not-allowed"
                 >
                   선택 승인 ({selectedRows.size}건)
                 </button>
@@ -212,11 +211,16 @@ export default function Keywords() {
                   }}
                   className="text-sm bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded transition-colors"
                 >
-                  일괄 승인
+                  승인 대상 선택
                 </button>
               )}
             </div>
           </div>
+          {pendingExpansion.length > 0 && (
+            <div className="mb-4 rounded-lg border border-yellow-800/50 bg-yellow-950/20 px-4 py-3 text-xs text-yellow-300">
+              승인 API는 아직 연결 전입니다. 현재는 대상 검토/선택만 가능하며 실제 등록 승인 실행은 비활성화되어 있습니다.
+            </div>
+          )}
           {filteredExpansion.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="text-3xl mb-3">🔍</div>

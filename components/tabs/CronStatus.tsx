@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { DEFAULT_SETTINGS, BRAND_KEYS, BRAND_LABELS } from '@/lib/config';
 import { fetchCronStatus, fetchSettings } from '@/lib/data';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -27,25 +28,6 @@ const CRON_LABELS: Record<string, string> = {
   'slot-rank-collect': '슬롯 순위 수집',
 };
 
-const BRAND_KEYS = ['kucham', 'uvid', 'meariset', 'foremong'] as const;
-const BRAND_LABELS: Record<string, string> = {
-  kucham: '쿠참',
-  uvid: '유비드',
-  meariset: '메아리셋',
-  foremong: '포레몽',
-};
-
-const DEFAULT_SETTINGS: Settings = {
-  brands: {
-    kucham: { bep_roas: 220, target_roas: 1000, keyword_click_threshold: 30 },
-    uvid: { bep_roas: 185, target_roas: 300, keyword_click_threshold: 30 },
-    meariset: { bep_roas: 176, target_roas: 176, keyword_click_threshold: 30 },
-    foremong: { bep_roas: 200, target_roas: 300, keyword_click_threshold: 30 },
-  },
-  verdict: { up_threshold_pct: 10, down_threshold_pct: -10 },
-  updated_at: '',
-  previous: null,
-};
 
 export default function CronStatus() {
   const [crons, setCrons] = useState<CronJob[]>([]);

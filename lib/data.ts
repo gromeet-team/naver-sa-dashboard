@@ -9,6 +9,7 @@ import type {
   BudgetData,
   CreativeHistoryItem,
 } from './types';
+import { DEFAULT_SETTINGS } from './config';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 
@@ -26,20 +27,8 @@ async function fetchJson<T>(url: string, fallback: T): Promise<T> {
   }
 }
 
-const defaultSettings: Settings = {
-  brands: {
-    kucham: { bep_roas: 220, target_roas: 300, keyword_click_threshold: 30 },
-    uvid: { bep_roas: 185, target_roas: 300, keyword_click_threshold: 30 },
-    meariset: { bep_roas: 176, target_roas: 176, keyword_click_threshold: 30 },
-    foremong: { bep_roas: 200, target_roas: 300, keyword_click_threshold: 30 },
-  },
-  verdict: { up_threshold_pct: 10, down_threshold_pct: -10 },
-  updated_at: '',
-  previous: null,
-};
-
 export async function fetchSettings(): Promise<Settings> {
-  return fetchJson<Settings>(`${API_URL}/api/settings`, defaultSettings);
+  return fetchJson<Settings>(`${API_URL}/api/settings`, DEFAULT_SETTINGS);
 }
 
 export async function fetchPending(): Promise<PendingData> {
