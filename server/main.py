@@ -22,6 +22,7 @@ CRON_STATUS_FILE = DATA_DIR / "cron_status.json"
 PENDING_FILE = DATA_DIR / "naver_sa_pending.json"
 PENDING_EXEC_FILE = DATA_DIR / "pending_execute.json"
 SETTINGS_FILE = DATA_DIR / "settings.json"
+AUTOMATION_CONFIG_FILE = DATA_DIR / "powerlink_automation_config.json"
 SA_HISTORY_DIR = DATA_DIR / "sa_history"
 KW_LEARNING_FILE = DATA_DIR / "keyword_learning.json"
 KW_EXPANSION_FILE = DATA_DIR / "keyword_expansion_candidates.json"
@@ -30,7 +31,7 @@ BRANDS = ["kucham", "uvid", "meariset", "foremong"]
 
 DEFAULT_SETTINGS = {
     "brands": {
-        "kucham":   {"bep_roas": 220, "target_roas": 1000, "keyword_click_threshold": 30},
+        "kucham":   {"bep_roas": 220, "target_roas": 300,  "keyword_click_threshold": 30},
         "uvid":     {"bep_roas": 185, "target_roas": 300,  "keyword_click_threshold": 30},
         "meariset": {"bep_roas": 176, "target_roas": 176,  "keyword_click_threshold": 30},
         "foremong": {"bep_roas": 200, "target_roas": 300,  "keyword_click_threshold": 30},
@@ -38,6 +39,15 @@ DEFAULT_SETTINGS = {
     "verdict": {"up_threshold_pct": 10, "down_threshold_pct": -10},
     "updated_at": "",
     "previous": None,
+}
+
+DEFAULT_AUTOMATION_CONFIG = {
+    "setup_only": True,
+    "allow_diagnosis_execute": False,
+    "allow_negative_keyword_apply": False,
+    "allow_creative_candidate_live": False,
+    "updated_at": "",
+    "note": "세팅 완료 전까지는 모든 파워링크 자동화가 후보 생성/큐 저장만 하고 실제 반영은 막습니다.",
 }
 
 # ── 유틸 ─────────────────────────────────────────────────
@@ -125,6 +135,16 @@ def get_pending_execute():
 @app.get("/api/cron-status")
 def get_cron_status():
     return read_json(CRON_STATUS_FILE, {"updated_at": "", "crons": []})
+
+
+@app.get("/api/automation-config")
+def get_automation_config():
+    config = read_json(AUTOMATION_CONFIG_FILE, None)
+    if not isinstance(config, dict):
+        return DEFAULT_AUTOMATION_CONFIG
+    merged = dict(DEFAULT_AUTOMATION_CONFIG)
+    merged.update(config)
+    return merged
 
 
 @app.get("/api/keyword-learning")

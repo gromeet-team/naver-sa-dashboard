@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { DEFAULT_SETTINGS, BRAND_KEYS, BRAND_LABELS } from '@/lib/config';
-import { fetchCronStatus, fetchSettings } from '@/lib/data';
+import { fetchAutomationConfig, fetchCronStatus, fetchSettings } from '@/lib/data';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import type { CronJob, Settings } from '@/lib/types';
+import type { AutomationConfig, CronJob, Settings } from '@/lib/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 
@@ -22,15 +22,28 @@ const CRON_LABELS: Record<string, string> = {
   'keyword-learner-collect': '키워드 수집',
   'keyword-learner-track': '키워드 트래킹',
   'keyword-learner-register': '키워드 등록',
-  'sa-diagnosis': 'SA 진단',
-  'sa-creative-add': '소재 추가',
-  'kucham-sa-monitor': '쿠참 SA 모니터링',
+  'sa-diagnosis': 'SA 진단/제안',
+  'sa-creative-add': '소재 교체 제안',
+  'kucham-sa-monitor': '브랜드 SA 모니터링',
   'slot-rank-collect': '슬롯 순위 수집',
 };
 
+const DEFAULT_AUTOMATION_CONFIG: AutomationConfig = {
+  setup_only: true,
+  allow_diagnosis_execute: false,
+  allow_negative_keyword_apply: false,
+  allow_creative_candidate_live: false,
+  updated_at: '',
+  note: '',
+};
+
+function modeBadge(enabled: boolean, onText: string, offText = '제안만') {
+  return enabled ? <Badge variant="green">{onText}</Badge> : <Badge variant="yellow">{offText}</Badge>;
+}
 
 export default function CronStatus() {
   const [crons, setCrons] = useState<CronJob[]>([]);
+  const [automation, setAutomation] = useState<AutomationConfig>(DEFAULT_AUTOMATION_CONFIG);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [formSettings, setFormSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
@@ -38,10 +51,11 @@ export default function CronStatus() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    Promise.all([fetchCronStatus(), fetchSettings()]).then(([cs, s]) => {
+    Promise.all([fetchCronStatus(), fetchSettings(), fetchAutomationConfig()]).then(([cs, s, a]) => {
       setCrons(cs.crons);
       setSettings(s);
       setFormSettings(s);
+      setAutomation(a);
       setLoading(false);
     });
   }, []);
@@ -105,6 +119,37 @@ export default function CronStatus() {
 
   return (
     <div className="space-y-6">
+      <Card>
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <CardTitle>오늘 변경된 자동화 모드</CardTitle>
+          {automation.setup_only ? (
+            <Badge variant="yellow">setup_only ON</Badge>
+          ) : (
+            <Badge variant="green">live 가능</Badge>
+          )}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="bg-[#1e2130] rounded-lg p-4 space-y-2">
+            <div className="text-sm text-white font-medium">SA 진단</div>
+            <div>{modeBadge(automation.allow_diagnosis_execute, '실행 허용')}</div>
+            <div className="text-xs text-gray-400">진단 결과를 자동 집행하지 않고 제안/검토용으로 유지합니다.</div>
+          </div>
+          <div className="bg-[#1e2130] rounded-lg p-4 space-y-2">
+            <div className="text-sm text-white font-medium">제외어 제안</div>
+            <div>{modeBadge(automation.allow_negative_keyword_apply, '자동 반영')}</div>
+            <div className="text-xs text-gray-400">현재는 승인 전 실제 제외어 등록 없이 후보만 저장합니다.</div>
+          </div>
+          <div className="bg-[#1e2130] rounded-lg p-4 space-y-2">
+            <div className="text-sm text-white font-medium">소재 교체 제안</div>
+            <div>{modeBadge(automation.allow_creative_candidate_live, '자동 반영')}</div>
+            <div className="text-xs text-gray-400">저CTR 그룹은 실제 추가 대신 교체안 큐만 생성합니다.</div>
+          </div>
+        </div>
+        {automation.note && (
+          <div className="mt-4 text-xs text-gray-500">{automation.note}</div>
+        )}
+      </Card>
+
       {/* Cron status table */}
       <Card>
         <CardTitle>크론 작업 상태</CardTitle>

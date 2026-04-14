@@ -4,6 +4,7 @@ import type {
   HistoryRecord,
   PendingExecute,
   CronStatus,
+  AutomationConfig,
   KeywordLearning,
   KeywordExpansion,
   BudgetData,
@@ -54,6 +55,17 @@ export async function fetchCronStatus(): Promise<CronStatus> {
   return fetchJson<CronStatus>(`${API_URL}/api/cron-status`, {
     updated_at: '',
     crons: [],
+  });
+}
+
+export async function fetchAutomationConfig(): Promise<AutomationConfig> {
+  return fetchJson<AutomationConfig>(`${API_URL}/api/automation-config`, {
+    setup_only: true,
+    allow_diagnosis_execute: false,
+    allow_negative_keyword_apply: false,
+    allow_creative_candidate_live: false,
+    updated_at: '',
+    note: '',
   });
 }
 

@@ -98,6 +98,15 @@ export interface CronStatus {
   crons: CronJob[];
 }
 
+export interface AutomationConfig {
+  setup_only: boolean;
+  allow_diagnosis_execute: boolean;
+  allow_negative_keyword_apply: boolean;
+  allow_creative_candidate_live: boolean;
+  updated_at?: string;
+  note?: string;
+}
+
 export interface KeywordLearning {
   keyword: string;
   brand: string;
