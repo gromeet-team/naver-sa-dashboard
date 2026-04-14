@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { DEFAULT_SETTINGS, BRAND_KEYS, BRAND_LABELS } from '@/lib/config';
-import { fetchAutomationConfig, fetchCronStatus, fetchSettings } from '@/lib/data';
+import { fetchAutomationConfig, fetchCronStatus, fetchProposalSummary, fetchSettings } from '@/lib/data';
 import { Card, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import type { AutomationConfig, CronJob, Settings } from '@/lib/types';
+import type { AutomationConfig, CronJob, ProposalSummary, Settings } from '@/lib/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '';
 
@@ -41,9 +41,39 @@ function modeBadge(enabled: boolean, onText: string, offText = '제안만') {
   return enabled ? <Badge variant="green">{onText}</Badge> : <Badge variant="yellow">{offText}</Badge>;
 }
 
+const DEFAULT_PROPOSAL_SUMMARY: ProposalSummary = {
+  generated_at: '',
+  negative_keyword_candidates: 0,
+  creative_groups: 0,
+  creative_items: 0,
+  landing_issues: 0,
+  creative_mismatches: 0,
+  brands: [],
+};
+
+function statusBadge(status: string, note: string) {
+  if (status === 'error') return <Badge variant="red">{note}</Badge>;
+  if (status === 'warn') return <Badge variant="yellow">{note}</Badge>;
+  return <Badge variant="green">{note}</Badge>;
+}
+
+function cronModeBadge(cronName: string, automation: AutomationConfig) {
+  if (cronName === 'sa-diagnosis') {
+    return modeBadge(automation.allow_diagnosis_execute, '실행 허용', '제안만');
+  }
+  if (cronName === 'sa-creative-add') {
+    return modeBadge(automation.allow_creative_candidate_live, '자동 반영', '승인 필요');
+  }
+  if (cronName === 'naver-sa-analyze') {
+    return <Badge variant="blue">분석</Badge>;
+  }
+  return null;
+}
+
 export default function CronStatus() {
   const [crons, setCrons] = useState<CronJob[]>([]);
   const [automation, setAutomation] = useState<AutomationConfig>(DEFAULT_AUTOMATION_CONFIG);
+  const [summary, setSummary] = useState<ProposalSummary>(DEFAULT_PROPOSAL_SUMMARY);
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [formSettings, setFormSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
@@ -51,11 +81,12 @@ export default function CronStatus() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    Promise.all([fetchCronStatus(), fetchSettings(), fetchAutomationConfig()]).then(([cs, s, a]) => {
+    Promise.all([fetchCronStatus(), fetchSettings(), fetchAutomationConfig(), fetchProposalSummary()]).then(([cs, s, a, p]) => {
       setCrons(cs.crons);
       setSettings(s);
       setFormSettings(s);
       setAutomation(a);
+      setSummary(p);
       setLoading(false);
     });
   }, []);
@@ -150,6 +181,59 @@ export default function CronStatus() {
         )}
       </Card>
 
+      <Card>
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <CardTitle>오늘 결과 요약</CardTitle>
+          {summary.generated_at && (
+            <div className="text-xs text-gray-500">기준: {summary.generated_at}</div>
+          )}
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <div className="bg-[#1e2130] rounded-lg p-4">
+            <div className="text-xs text-gray-400">제외어 제안</div>
+            <div className="text-xl font-semibold text-white mt-1">{summary.negative_keyword_candidates}건</div>
+          </div>
+          <div className="bg-[#1e2130] rounded-lg p-4">
+            <div className="text-xs text-gray-400">소재 교체 제안 그룹</div>
+            <div className="text-xl font-semibold text-white mt-1">{summary.creative_groups}개</div>
+          </div>
+          <div className="bg-[#1e2130] rounded-lg p-4">
+            <div className="text-xs text-gray-400">랜딩 검토</div>
+            <div className="text-xl font-semibold text-white mt-1">{summary.landing_issues}건</div>
+          </div>
+          <div className="bg-[#1e2130] rounded-lg p-4">
+            <div className="text-xs text-gray-400">소재 불일치 진단</div>
+            <div className="text-xl font-semibold text-white mt-1">{summary.creative_mismatches}건</div>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[#2a2d3e] text-gray-400 text-left">
+                <th className="pb-2 pr-4 font-medium">브랜드</th>
+                <th className="pb-2 pr-4 font-medium">제외어</th>
+                <th className="pb-2 pr-4 font-medium">소재 제안 그룹</th>
+                <th className="pb-2 pr-4 font-medium">랜딩 검토</th>
+                <th className="pb-2 pr-4 font-medium">소재 불일치</th>
+                <th className="pb-2 font-medium">상태</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#2a2d3e]">
+              {summary.brands.map((brand) => (
+                <tr key={brand.brand} className="hover:bg-[#1e2130] transition-colors">
+                  <td className="py-2 pr-4 text-white text-sm">{brand.brand_name}</td>
+                  <td className="py-2 pr-4 text-gray-300">{brand.negative_keyword_candidates}</td>
+                  <td className="py-2 pr-4 text-gray-300">{brand.creative_groups}</td>
+                  <td className="py-2 pr-4 text-gray-300">{brand.landing_issues}</td>
+                  <td className="py-2 pr-4 text-gray-300">{brand.creative_mismatches}</td>
+                  <td className="py-2">{statusBadge(brand.status, brand.status_note)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
       {/* Cron status table */}
       <Card>
         <CardTitle>크론 작업 상태</CardTitle>
@@ -173,10 +257,13 @@ export default function CronStatus() {
                     className="hover:bg-[#1e2130] transition-colors"
                   >
                     <td className="py-2 pr-4">
-                      <div className="text-white text-sm">
-                        {CRON_LABELS[cron.name] ?? cron.name}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <div className="text-white text-sm">
+                          {CRON_LABELS[cron.name] ?? cron.name}
+                        </div>
+                        {cronModeBadge(cron.name, automation)}
                       </div>
-                      <div className="text-gray-600 text-xs font-mono">
+                      <div className="text-gray-600 text-xs font-mono mt-1">
                         {cron.name}
                       </div>
                     </td>

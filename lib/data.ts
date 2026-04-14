@@ -5,6 +5,7 @@ import type {
   PendingExecute,
   CronStatus,
   AutomationConfig,
+  ProposalSummary,
   KeywordLearning,
   KeywordExpansion,
   BudgetData,
@@ -66,6 +67,18 @@ export async function fetchAutomationConfig(): Promise<AutomationConfig> {
     allow_creative_candidate_live: false,
     updated_at: '',
     note: '',
+  });
+}
+
+export async function fetchProposalSummary(): Promise<ProposalSummary> {
+  return fetchJson<ProposalSummary>(`${API_URL}/api/proposal-summary`, {
+    generated_at: '',
+    negative_keyword_candidates: 0,
+    creative_groups: 0,
+    creative_items: 0,
+    landing_issues: 0,
+    creative_mismatches: 0,
+    brands: [],
   });
 }
 

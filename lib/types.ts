@@ -107,6 +107,28 @@ export interface AutomationConfig {
   note?: string;
 }
 
+export interface ProposalBrandSummary {
+  brand: string;
+  brand_name: string;
+  negative_keyword_candidates: number;
+  creative_groups: number;
+  creative_items: number;
+  landing_issues: number;
+  creative_mismatches: number;
+  status: string;
+  status_note: string;
+}
+
+export interface ProposalSummary {
+  generated_at: string;
+  negative_keyword_candidates: number;
+  creative_groups: number;
+  creative_items: number;
+  landing_issues: number;
+  creative_mismatches: number;
+  brands: ProposalBrandSummary[];
+}
+
 export interface KeywordLearning {
   keyword: string;
   brand: string;

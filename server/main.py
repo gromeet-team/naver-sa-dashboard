@@ -23,6 +23,9 @@ PENDING_FILE = DATA_DIR / "naver_sa_pending.json"
 PENDING_EXEC_FILE = DATA_DIR / "pending_execute.json"
 SETTINGS_FILE = DATA_DIR / "settings.json"
 AUTOMATION_CONFIG_FILE = DATA_DIR / "powerlink_automation_config.json"
+CREATIVE_QUEUE_FILE = DATA_DIR / "creative_add_queue.json"
+NEG_KW_FILE = DATA_DIR / "neg_kw_candidates.json"
+DIAGNOSIS_LOG_FILE = Path("/home/ben/.openclaw/workspace/logs/naver-sa-diagnosis.log")
 SA_HISTORY_DIR = DATA_DIR / "sa_history"
 KW_LEARNING_FILE = DATA_DIR / "keyword_learning.json"
 KW_EXPANSION_FILE = DATA_DIR / "keyword_expansion_candidates.json"
@@ -49,6 +52,119 @@ DEFAULT_AUTOMATION_CONFIG = {
     "updated_at": "",
     "note": "세팅 완료 전까지는 모든 파워링크 자동화가 후보 생성/큐 저장만 하고 실제 반영은 막습니다.",
 }
+
+BRAND_LABELS = {
+    "kucham": "쿠참",
+    "uvid": "유비드",
+    "betterworld": "유비드",
+    "meariset": "메아리셋",
+    "foremong": "포레몽",
+}
+
+
+def _norm_brand(brand: str) -> str:
+    return "uvid" if brand == "betterworld" else brand
+
+
+def _default_brand_summary(brand_key: str) -> dict:
+    return {
+        "brand": brand_key,
+        "brand_name": BRAND_LABELS.get(brand_key, brand_key),
+        "negative_keyword_candidates": 0,
+        "creative_groups": 0,
+        "creative_items": 0,
+        "landing_issues": 0,
+        "creative_mismatches": 0,
+        "status": "ok",
+        "status_note": "정상",
+    }
+
+
+def _build_proposal_summary() -> dict:
+    summary = {
+        "generated_at": "",
+        "negative_keyword_candidates": 0,
+        "creative_groups": 0,
+        "creative_items": 0,
+        "landing_issues": 0,
+        "creative_mismatches": 0,
+        "brands": [_default_brand_summary(b) for b in BRANDS],
+    }
+    brand_map = {item["brand"]: item for item in summary["brands"]}
+
+    creative_data = read_json(CREATIVE_QUEUE_FILE, {})
+    if isinstance(creative_data, dict):
+        summary["generated_at"] = creative_data.get("generated_at", "")
+        summary["creative_groups"] = int(creative_data.get("total_groups", 0) or 0)
+        summary["creative_items"] = int(creative_data.get("total_creatives", 0) or 0)
+        for item in creative_data.get("items", []):
+            if not isinstance(item, dict):
+                continue
+            brand_key = _norm_brand(str(item.get("brand", "")))
+            if brand_key not in brand_map:
+                continue
+            brand_map[brand_key]["creative_groups"] += 1
+            brand_map[brand_key]["creative_items"] += len(item.get("creatives", []))
+
+    neg_data = read_json(NEG_KW_FILE, {})
+    if isinstance(neg_data, dict):
+        if not summary["generated_at"]:
+            summary["generated_at"] = neg_data.get("processed_at", "")
+        for brand_key, payload in (neg_data.get("brands", {}) or {}).items():
+            norm = _norm_brand(str(brand_key))
+            if norm not in brand_map or not isinstance(payload, dict):
+                continue
+            count = len(payload.get("candidates", []))
+            brand_map[norm]["negative_keyword_candidates"] = count
+            summary["negative_keyword_candidates"] += count
+
+    try:
+        lines = DIAGNOSIS_LOG_FILE.read_text(encoding="utf-8").splitlines()
+    except Exception:
+        lines = []
+
+    latest_block = []
+    current_block = []
+    in_block = False
+    for line in lines:
+        if "=== SA 진단" in line:
+            current_block = [line]
+            in_block = True
+            continue
+        if in_block:
+            current_block.append(line)
+            if "=== 완료 ===" in line:
+                latest_block = current_block[:]
+                current_block = []
+                in_block = False
+
+    for line in latest_block:
+        for brand_key in BRANDS:
+            label = BRAND_LABELS[brand_key]
+            tag = f"[{label}]"
+            if tag not in line:
+                continue
+            if "랜딩전환율 이상" in line:
+                brand_map[brand_key]["landing_issues"] += 1
+                summary["landing_issues"] += 1
+            if "소재불일치 의심" in line:
+                brand_map[brand_key]["creative_mismatches"] += 1
+                summary["creative_mismatches"] += 1
+            if "No permission to access the resource" in line:
+                brand_map[brand_key]["status"] = "error"
+                brand_map[brand_key]["status_note"] = "권한 오류"
+
+    for brand_key, item in brand_map.items():
+        if item["status"] == "error":
+            continue
+        if item["landing_issues"] > 0:
+            item["status"] = "warn"
+            item["status_note"] = "랜딩 검토 필요"
+        elif item["creative_groups"] > 0 or item["creative_mismatches"] > 0:
+            item["status"] = "warn"
+            item["status_note"] = "제안 검토 필요"
+
+    return summary
 
 # ── 유틸 ─────────────────────────────────────────────────
 def read_json(path: Path, default: Any = None) -> Any:
@@ -145,6 +261,11 @@ def get_automation_config():
     merged = dict(DEFAULT_AUTOMATION_CONFIG)
     merged.update(config)
     return merged
+
+
+@app.get("/api/proposal-summary")
+def get_proposal_summary():
+    return _build_proposal_summary()
 
 
 @app.get("/api/keyword-learning")
